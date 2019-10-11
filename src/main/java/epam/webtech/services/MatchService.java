@@ -3,6 +3,8 @@ package epam.webtech.services;
 import epam.webtech.entities.*;
 import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
+import epam.webtech.repositories.XmlBetRepository;
+import epam.webtech.repositories.XmlRaceRepository;
 import epam.webtech.repositories.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,17 +15,23 @@ import java.util.ArrayList;
 public class MatchService {
 
     @Autowired
+    private XmlBetRepository betRepository;
+
+    @Autowired
+    private XmlRaceRepository raceRepository;
+
+    @Autowired
     private XmlUserRepository userRepository;
 
     public Match createNewMatch(Race race) {
         Match newMatch = new Match();
-        newMatch.setRace(race);
-        float[] odds = new float[race.getHorses().length];
+        newMatch.setRaceId(race.getId());
+        float[] odds = new float[race.getHorsesNames().length];
         for (int i = 0; i < odds.length; i++) {
             odds[i] = 1 + 1 / odds.length;
         }
         newMatch.setOdds(odds);
-        newMatch.setBets(new ArrayList<>());
+        newMatch.setBetsId(new ArrayList<>());
         return newMatch;
     }
 
@@ -33,8 +41,8 @@ public class MatchService {
             Bet newBet = new Bet();
             newBet.setUserName(user.getName());
             newBet.setAmount(amount);
-            newBet.setMatch(match);
-            newBet.setHorse(horse);
+            newBet.setMatchID(match.getId());
+            newBet.setHorseName(horse.getName());
             updateOdds(match, newBet);
             match.setBank(match.getBank() + amount);
             return newBet;
@@ -44,33 +52,37 @@ public class MatchService {
     }
 
     private void updateOdds(Match match, Bet bet) {
-        match.getBets().add(bet);
-        Horse[] horses = match.getRace().getHorses();
+        betRepository.add(bet);
+        match.getBetsId().add(bet.getId());
+        Race race = raceRepository.getByID(match.getRaceId());
+        String[] horsesNames = race.getHorsesNames();
         float[] odds = match.getOdds();
-        int totalBets = match.getBets().size();
-        for (int i = 0; i < horses.length; i++) {
+        int totalBets = match.getBetsId().size();
+        for (int i = 0; i < horsesNames.length; i++) {
             long counter;
             int finalI = i;
-            counter = match.getBets().stream()
-                    .filter(x -> x.getHorse().equals(horses[finalI]))
+            counter = match.getBetsId().stream()
+                    .filter(x -> betRepository.getByID(x).getHorseName().equals(horsesNames[finalI]))
                     .count();
             odds[i] = 1 + 1 - (counter + 1) / totalBets;
         }
     }
 
     public void checkBets(Match match) {
-        if (match.getRace().getStatus().equals(Race.RaceStatus.FINISHED)){
-            Horse winner = match.getRace().getWinner();
+        Race race = raceRepository.getByID(match.getRaceId());
+        if (race.getStatus().equals(Race.RaceStatus.FINISHED)){
+            String winnerHorseName = race.getWinnerHorseName();
             int winnerIndex = 0;
             for (int i = 0; i < match.getOdds().length; i++)
             {
-                if (match.getRace().getHorses()[i].equals(winner)){
+                if (race.getHorsesNames()[i].equals(winnerHorseName)){
                     winnerIndex = i;
                     break;
                 }
             }
-            for (Bet bet: match.getBets()) {
-                if (bet.getHorse().equals(winner)) {
+            for (int id: match.getBetsId()) {
+                Bet bet = betRepository.getByID(id);
+                if (bet.getHorseName().equals(winnerHorseName)) {
                     int prize = (int)Math.floor(match.getOdds()[winnerIndex] * bet.getAmount());
                     try {
                         User user = userRepository.getByName(bet.getUserName());

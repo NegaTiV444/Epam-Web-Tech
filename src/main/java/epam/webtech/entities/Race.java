@@ -14,8 +14,8 @@ public class Race extends Entity implements Comparable {
         FINISHED
     }
 
-    private Horse[] horses;
-    private Horse winner;
+    private String[] horsesNames;
+    private String winnerHorseName;
     private RaceStatus status;
     private Date date;
 

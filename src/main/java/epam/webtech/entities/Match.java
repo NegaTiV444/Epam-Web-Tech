@@ -7,8 +7,8 @@ import java.util.List;
 @Data
 public class Match extends Entity implements Comparable{
 
-    private Race race;
-    private List<Bet> bets;
+    private int raceId;
+    private List<Integer> betsId;
     private float[] odds;
     private int bank;
 
