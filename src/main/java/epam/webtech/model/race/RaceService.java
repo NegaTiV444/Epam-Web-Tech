@@ -1,5 +1,6 @@
 package epam.webtech.model.race;
 
+import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.model.enums.RaceStatus;
@@ -11,6 +12,7 @@ import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -36,7 +38,7 @@ public class RaceService {
         return newRace;
     }
 
-    public Bet addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException {
+    public Bet addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException, AlreadyExistsException, IOException {
         if (user.getBank() >= amount) {
             user.setBank(user.getBank() - amount);
             Bet newBet = new Bet();
@@ -52,7 +54,7 @@ public class RaceService {
 
     }
 
-    private void updateOdds(Race race, Bet bet) {
+    private void updateOdds(Race race, Bet bet) throws AlreadyExistsException, IOException {
         betRepository.add(bet);
         race.getBetsId().add(bet.getId());
         String[] horsesNames = race.getHorsesNames();
@@ -62,7 +64,13 @@ public class RaceService {
             long counter;
             int finalI = i;
             counter = race.getBetsId().stream()
-                    .filter(x -> betRepository.getByID(x).getHorseName().equals(horsesNames[finalI]))
+                    .filter(x -> {
+                        try {
+                            return betRepository.getByID(x).getHorseName().equals(horsesNames[finalI]);
+                        } catch (NotFoundException e) {
+                            return false;
+                        }
+                    })
                     .count();
             odds[i] = 1 + 1 - (counter + 1) / totalBets;
         }
@@ -80,17 +88,23 @@ public class RaceService {
                 }
             }
             for (int id: race.getBetsId()) {
-                Bet bet = betRepository.getByID(id);
-                if (bet.getHorseName().equals(winnerHorseName)) {
-                    int prize = (int)Math.floor(race.getOdds()[winnerIndex] * bet.getAmount());
-                    try {
-                        User user = userRepository.getByName(bet.getUserName());
-                        user.setBank(user.getBank() + prize);
-                        race.setBank(race.getBank() - prize);
-                    } catch (NotFoundException e) {
-                        //TODO log
+                Bet bet = null;
+                try {
+                    bet = betRepository.getByID(id);
+                    if (bet.getHorseName().equals(winnerHorseName)) {
+                        int prize = (int)Math.floor(race.getOdds()[winnerIndex] * bet.getAmount());
+                        try {
+                            User user = userRepository.getByName(bet.getUserName());
+                            user.setBank(user.getBank() + prize);
+                            race.setBank(race.getBank() - prize);
+                        } catch (NotFoundException e) {
+                            //TODO log
+                        }
                     }
+                } catch (NotFoundException e) {
+                    //TODO log
                 }
+
             }
         }
     }
