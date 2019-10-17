@@ -1,10 +1,10 @@
-package epam.webtech.repositories;
+package epam.webtech.model.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import epam.webtech.entities.User;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
+import epam.webtech.model.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;

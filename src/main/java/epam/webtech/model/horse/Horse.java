@@ -1,5 +1,6 @@
-package epam.webtech.entities;
+package epam.webtech.model.horse;
 
+import epam.webtech.model.Entity;
 import lombok.Data;
 
 @Data

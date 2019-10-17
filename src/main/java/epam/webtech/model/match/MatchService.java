@@ -1,11 +1,14 @@
-package epam.webtech.services;
+package epam.webtech.model.match;
 
-import epam.webtech.entities.*;
 import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.repositories.XmlBetRepository;
-import epam.webtech.repositories.XmlRaceRepository;
-import epam.webtech.repositories.XmlUserRepository;
+import epam.webtech.model.horse.Horse;
+import epam.webtech.model.race.Race;
+import epam.webtech.model.bet.Bet;
+import epam.webtech.model.user.User;
+import epam.webtech.model.bet.XmlBetRepository;
+import epam.webtech.model.race.XmlRaceRepository;
+import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

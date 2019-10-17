@@ -1,5 +1,6 @@
-package epam.webtech.entities;
+package epam.webtech.model.race;
 
+import epam.webtech.model.Entity;
 import lombok.Data;
 
 import java.util.Date;

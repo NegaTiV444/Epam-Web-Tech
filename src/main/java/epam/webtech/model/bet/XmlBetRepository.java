@@ -1,7 +1,7 @@
-package epam.webtech.repositories;
+package epam.webtech.model.bet;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import epam.webtech.entities.Bet;
+import epam.webtech.model.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -1,10 +1,10 @@
-package epam.webtech.services;
+package epam.webtech.model.user;
 
-import epam.webtech.entities.User;
+import epam.webtech.model.user.User;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.exceptions.WrongPasswordException;
-import epam.webtech.repositories.XmlUserRepository;
+import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

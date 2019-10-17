@@ -1,6 +1,6 @@
-package epam.webtech.repositories;
+package epam.webtech.model.horse;
 
-import epam.webtech.entities.Horse;
+import epam.webtech.model.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

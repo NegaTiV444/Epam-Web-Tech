@@ -1,6 +1,6 @@
-package epam.webtech.repositories;
+package epam.webtech.model.match;
 
-import epam.webtech.entities.Match;
+import epam.webtech.model.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

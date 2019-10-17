@@ -1,4 +1,4 @@
-package epam.webtech.repositories;
+package epam.webtech.model;
 
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;

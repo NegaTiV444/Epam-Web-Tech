@@ -1,5 +1,7 @@
-package epam.webtech.entities;
+package epam.webtech.model.user;
 
+import epam.webtech.model.bet.Bet;
+import epam.webtech.model.Entity;
 import lombok.Data;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package epam.webtech.entities;
+package epam.webtech.model;
 
 import lombok.Data;
 
