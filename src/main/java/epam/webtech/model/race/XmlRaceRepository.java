@@ -1,34 +1,84 @@
 package epam.webtech.model.race;
 
-import epam.webtech.model.CrudRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.NotFoundException;
+import epam.webtech.model.XmlCrudRepository;
+import epam.webtech.model.bet.Bet;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Repository
-public class XmlRaceRepository implements CrudRepository<Race> {
+public class XmlRaceRepository implements XmlCrudRepository<Race> {
 
     private static final String DATA_FILE_NAME = "races.xml";
 
+    private XmlMapper xmlMapper = new XmlMapper();
+    private Map<Integer, Race> races;
+    private int lastId = 0;
+
     private XmlRaceRepository() {
+        File dataFile = new File(DATA_FILE_NAME);
+        String xml = null;
+        races = new HashMap<>();
+        try {
+            xml = inputStreamToString(new FileInputStream(dataFile));
+            List<Race> raceList = xmlMapper.readValue(xml, new TypeReference<List<Race>>() {
+            });
+            raceList.forEach(race -> {
+                        races.put(race.getId(), race);
+                        if (race.getId() > lastId)
+                            lastId = race.getId();
+                    }
+            );
+        } catch (IOException e) {
+            //TODO Add log
+        }
     }
 
-
-    @Override
-    public void add(Race object) {
-
+    private void updateDataFile() throws IOException {
+        xmlMapper.writeValue(new File(DATA_FILE_NAME), races.values());
     }
 
     @Override
-    public Race getByID(int id) {
-        return null;
+    public void add(Race object) throws AlreadyExistsException, IOException {
+        if (races.containsKey(object.getId()))
+            throw new AlreadyExistsException("Race with id " + object.getId() + " already exists");
+        object.setId(lastId++);
+        races.put(object.getId(), object);
+        updateDataFile();
     }
 
     @Override
-    public void update(Race object) {
-
+    public Race getByID(int id) throws NotFoundException {
+        Race race = races.get(id);
+        if (null == race)
+            throw new NotFoundException("Race with id " + id + " not found");
+        return race;
     }
 
     @Override
-    public void delete(Race object) {
+    public void update(Race object) throws NotFoundException, IOException {
+        if (races.containsKey(object.getId()))
+            races.put(object.getId(), object);
+        else
+            throw new NotFoundException("Race with id " + object.getId() + " not found");
+        updateDataFile();
+    }
 
+    @Override
+    public void delete(Race object) throws NotFoundException, IOException {
+        if (races.containsKey(object.getId()))
+            races.remove(object.getId());
+        else
+            throw new NotFoundException("Race with id " + object.getId() + " not found");
+        updateDataFile();
     }
 }

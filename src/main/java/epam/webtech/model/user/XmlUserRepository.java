@@ -4,25 +4,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.CrudRepository;
+import epam.webtech.model.XmlCrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class XmlUserRepository implements CrudRepository<User> {
+public class XmlUserRepository implements XmlCrudRepository<User> {
 
     private static final String DATA_FILE_NAME = "users.xml";
 
     private XmlMapper xmlMapper = new XmlMapper();
-    private File dataFile;
     private Map<String, User> users;
+    private int lastId = 0;
 
     private XmlUserRepository() {
-        dataFile = new File(DATA_FILE_NAME);
+        File dataFile = new File(DATA_FILE_NAME);
         String xml = null;
         users = new HashMap<>();
         try {
@@ -30,6 +32,11 @@ public class XmlUserRepository implements CrudRepository<User> {
             List<User> userList = xmlMapper.readValue(xml, new TypeReference<List<User>>() {
             });
             userList.forEach(usr -> users.put(usr.getName(), usr));
+            userList.forEach(usr -> {
+                users.put(usr.getName(), usr);
+                if (usr.getId() > lastId)
+                    lastId = usr.getId();
+            });
         } catch (IOException e) {
             //TODO Add log
         }
@@ -39,22 +46,11 @@ public class XmlUserRepository implements CrudRepository<User> {
         xmlMapper.writeValue(new File(DATA_FILE_NAME), users.values());
     }
 
-    private String inputStreamToString(InputStream is) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String line;
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        br.close();
-        return sb.toString();
-    }
-
-
     @Override
     public void add(User object) throws AlreadyExistsException, IOException {
         if (users.containsKey(object.getName()))
             throw new AlreadyExistsException("User with name " + object.getName() + " already exists");
+        object.setId(lastId++);
         users.put(object.getName(), object);
         updateDataFile();
     }

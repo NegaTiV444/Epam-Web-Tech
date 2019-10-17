@@ -1,24 +1,36 @@
 package epam.webtech.model.race;
 
 import epam.webtech.model.Entity;
+import epam.webtech.model.enums.RaceStatus;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Data
-public class Race extends Entity implements Comparable {
+public class Race extends Entity implements Comparable<Race> {
 
-    public enum RaceStatus {
-        VAITING,
-        IN_PROGRESS,
-        FINISHED
+    @Override
+    public int compareTo(Race o) {
+        if (status.getPriority() == o.status.getPriority()) {
+            return date.compareTo(o.date);
+        } else
+            return o.status.getPriority() - status.getPriority();
     }
+
+    private int id;
 
     private String[] horsesNames;
     private String winnerHorseName;
     private RaceStatus status;
     private Date date;
+
+
+    private List<Integer> betsId;
+    private float[] odds;
+    private int bank;
+
 
     @Override
     public int hashCode() {
