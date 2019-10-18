@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.model.XmlCrudRepository;
+import epam.webtech.model.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class XmlBetRepository implements XmlCrudRepository<Bet> {
@@ -79,5 +81,11 @@ public class XmlBetRepository implements XmlCrudRepository<Bet> {
         else
             throw new NotFoundException("Bet with id " + object.getId() + " not found");
         updateDataFile();
+    }
+
+    public List<Bet> findByUser(User user) {
+        return bets.values().stream()
+                .filter(bet -> bet.getUserName().equals(user.getName()))
+                .collect(Collectors.toList());
     }
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class User extends Entity implements Comparable{
+public class User extends Entity implements Comparable<User>{
 
     private int bank;
     private String name;
@@ -15,7 +15,7 @@ public class User extends Entity implements Comparable{
     private String passwordHash;
 
     @Override
-    public int compareTo(Object o) {
-        return name.compareTo(((User)o).name);
+    public int compareTo(User o) {
+        return name.compareTo(o.name);
     }
 }

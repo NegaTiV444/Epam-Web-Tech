@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class XmlUserRepository implements XmlCrudRepository<User> {
+public class XmlUserRepository implements XmlCrudRepository<User>, UserRepository {
 
     private static final String DATA_FILE_NAME = "users.xml";
 
@@ -63,6 +63,7 @@ public class XmlUserRepository implements XmlCrudRepository<User> {
                 .orElseThrow(() -> new NotFoundException("User with ID " + id + " not found"));
     }
 
+    @Override
     public User getByName(String name) throws NotFoundException {
         User user = users.get(name);
         if (null == user)
