@@ -3,11 +3,11 @@ package epam.webtech.model.race;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
+import epam.webtech.model.bet.Bet;
+import epam.webtech.model.bet.XmlBetRepository;
 import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
-import epam.webtech.model.bet.Bet;
 import epam.webtech.model.user.User;
-import epam.webtech.model.bet.XmlBetRepository;
 import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class RaceService {
@@ -38,8 +39,13 @@ public class RaceService {
         return newRace;
     }
 
-    public Bet addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException, AlreadyExistsException, IOException {
+    public void addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException, AlreadyExistsException, IOException {
         if (user.getBank() >= amount) {
+            List<Bet> bets = betRepository.findAll();
+            boolean isError = bets.stream()
+                    .anyMatch(bet -> (bet.getUserName().equals(user.getName()) && (bet.getRaceId() == race.getId())));
+            if (isError)
+                throw new AlreadyExistsException("Your already have bet on this race");
             user.setBank(user.getBank() - amount);
             Bet newBet = new Bet();
             newBet.setUserName(user.getName());
@@ -48,10 +54,9 @@ public class RaceService {
             newBet.setHorseName(horse.getName());
             updateOdds(race, newBet);
             race.setBank(race.getBank() + amount);
-            return newBet;
+            betRepository.add(newBet);
         } else
-            throw new NotEnoughMoneyException();
-
+            throw new NotEnoughMoneyException("Sorry, your don't have enough money");
     }
 
     private void updateOdds(Race race, Bet bet) throws AlreadyExistsException, IOException {
@@ -77,22 +82,21 @@ public class RaceService {
     }
 
     public void checkBets(Race race) {
-        if (race.getStatus().equals(RaceStatus.FINISHED)){
+        if (race.getStatus().equals(RaceStatus.FINISHED)) {
             String winnerHorseName = race.getWinnerHorseName();
             int winnerIndex = 0;
-            for (int i = 0; i < race.getOdds().length; i++)
-            {
-                if (race.getHorsesNames()[i].equals(winnerHorseName)){
+            for (int i = 0; i < race.getOdds().length; i++) {
+                if (race.getHorsesNames()[i].equals(winnerHorseName)) {
                     winnerIndex = i;
                     break;
                 }
             }
-            for (int id: race.getBetsId()) {
+            for (int id : race.getBetsId()) {
                 Bet bet = null;
                 try {
                     bet = betRepository.getByID(id);
                     if (bet.getHorseName().equals(winnerHorseName)) {
-                        int prize = (int)Math.floor(race.getOdds()[winnerIndex] * bet.getAmount());
+                        int prize = (int) Math.floor(race.getOdds()[winnerIndex] * bet.getAmount());
                         try {
                             User user = userRepository.getByName(bet.getUserName());
                             user.setBank(user.getBank() + prize);

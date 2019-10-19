@@ -19,8 +19,6 @@ public class Race extends Entity implements Comparable<Race> {
             return o.status.getPriority() - status.getPriority();
     }
 
-    private int id;
-
     private String[] horsesNames;
     private String winnerHorseName;
     private RaceStatus status;
@@ -34,6 +32,8 @@ public class Race extends Entity implements Comparable<Race> {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(getId());
     }
+
 }

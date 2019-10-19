@@ -4,18 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.XmlCrudRepository;
+import epam.webtech.model.XmlRepository;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class XmlUserRepository implements XmlCrudRepository<User>, UserRepository {
+public class XmlUserRepository implements XmlRepository, UserRepository {
 
     private static final String DATA_FILE_NAME = "users.xml";
 
@@ -50,7 +51,7 @@ public class XmlUserRepository implements XmlCrudRepository<User>, UserRepositor
     public void add(User object) throws AlreadyExistsException, IOException {
         if (users.containsKey(object.getName()))
             throw new AlreadyExistsException("User with name " + object.getName() + " already exists");
-        object.setId(lastId++);
+        object.setId(++lastId);
         users.put(object.getName(), object);
         updateDataFile();
     }
@@ -87,5 +88,10 @@ public class XmlUserRepository implements XmlCrudRepository<User>, UserRepositor
         else
             throw new NotFoundException("User with name " + object.getName() + " not found");
         updateDataFile();
+    }
+
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
     }
 }

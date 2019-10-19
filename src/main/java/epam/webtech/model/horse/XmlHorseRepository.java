@@ -4,18 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.XmlCrudRepository;
+import epam.webtech.model.XmlRepository;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class XmlHorseRepository implements XmlCrudRepository<Horse> {
+public class XmlHorseRepository implements XmlRepository, HorseRepository {
 
     private static final String DATA_FILE_NAME = "horses.xml";
     private XmlMapper xmlMapper = new XmlMapper();
@@ -48,7 +49,7 @@ public class XmlHorseRepository implements XmlCrudRepository<Horse> {
     public void add(Horse object) throws AlreadyExistsException, IOException {
         if (horses.containsKey(object.getName()))
             throw new AlreadyExistsException("Horse with name " + object.getName() + " already exists");
-        object.setId(lastId++);
+        object.setId(++lastId);
         horses.put(object.getName(), object);
         updateDataFile();
     }
@@ -77,5 +78,18 @@ public class XmlHorseRepository implements XmlCrudRepository<Horse> {
         else
             throw new NotFoundException("User with name " + object.getName() + " not found");
         updateDataFile();
+    }
+
+    @Override
+    public List<Horse> findAll() {
+        return new ArrayList<>(horses.values());
+    }
+
+    @Override
+    public Horse getByName(String name) throws NotFoundException {
+        Horse horse = horses.get(name);
+        if (null == horse)
+            throw new NotFoundException("Horse with name " + name + " not found");
+        return horse;
     }
 }

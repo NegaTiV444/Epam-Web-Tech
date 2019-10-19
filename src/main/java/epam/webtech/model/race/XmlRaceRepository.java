@@ -4,19 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.XmlCrudRepository;
-import epam.webtech.model.bet.Bet;
+import epam.webtech.model.XmlRepository;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class XmlRaceRepository implements XmlCrudRepository<Race> {
+public class XmlRaceRepository implements XmlRepository, RaceRepository {
 
     private static final String DATA_FILE_NAME = "races.xml";
 
@@ -51,7 +51,7 @@ public class XmlRaceRepository implements XmlCrudRepository<Race> {
     public void add(Race object) throws AlreadyExistsException, IOException {
         if (races.containsKey(object.getId()))
             throw new AlreadyExistsException("Race with id " + object.getId() + " already exists");
-        object.setId(lastId++);
+        object.setId(++lastId);
         races.put(object.getId(), object);
         updateDataFile();
     }
@@ -80,5 +80,10 @@ public class XmlRaceRepository implements XmlCrudRepository<Race> {
         else
             throw new NotFoundException("Race with id " + object.getId() + " not found");
         updateDataFile();
+    }
+
+    @Override
+    public List<Race> findAll() {
+        return new ArrayList<>(races.values());
     }
 }

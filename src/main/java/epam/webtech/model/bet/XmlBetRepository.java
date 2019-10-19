@@ -4,20 +4,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.XmlCrudRepository;
+import epam.webtech.model.XmlRepository;
 import epam.webtech.model.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class XmlBetRepository implements XmlCrudRepository<Bet> {
+public class XmlBetRepository implements XmlRepository, BetRepository {
 
     private static final String DATA_FILE_NAME = "bets.xml";
 
@@ -52,7 +53,7 @@ public class XmlBetRepository implements XmlCrudRepository<Bet> {
     public void add(Bet object) throws AlreadyExistsException, IOException {
         if (bets.containsKey(object.getId()))
             throw new AlreadyExistsException("Bet with id " + object.getId() + " already exists");
-        object.setId(lastId++);
+        object.setId(++lastId);
         bets.put(object.getId(), object);
         updateDataFile();
     }
@@ -83,6 +84,12 @@ public class XmlBetRepository implements XmlCrudRepository<Bet> {
         updateDataFile();
     }
 
+    @Override
+    public List<Bet> findAll() {
+        return new ArrayList<>(bets.values());
+    }
+
+    @Override
     public List<Bet> findByUser(User user) {
         return bets.values().stream()
                 .filter(bet -> bet.getUserName().equals(user.getName()))

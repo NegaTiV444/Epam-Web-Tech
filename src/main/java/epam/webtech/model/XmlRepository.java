@@ -1,8 +1,11 @@
 package epam.webtech.model;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-public interface XmlCrudRepository<T> extends CrudRepository<T> {
+public interface XmlRepository {
 
     default String inputStreamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
