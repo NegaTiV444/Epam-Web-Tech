@@ -7,6 +7,7 @@ import epam.webtech.exceptions.WrongPasswordException;
 import epam.webtech.model.bet.Bet;
 import epam.webtech.model.bet.BetRepository;
 import epam.webtech.model.enums.Command;
+import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
 import epam.webtech.model.horse.HorseRepository;
 import epam.webtech.model.race.Race;
@@ -85,6 +86,12 @@ public class CommandHandler {
                 case "/addhorse":
                     if (authorityLvl >= Command.ADD_HORSE.getAuthorityLvl())
                         handleAddHorseCommand();
+                    else
+                        handleWrongCommand();
+                    break;
+                case "/finishrace":
+                    if (authorityLvl >= Command.FINISH_RACE.getAuthorityLvl())
+                        handleFinishRaceCommand();
                     else
                         handleWrongCommand();
                     break;
@@ -247,9 +254,9 @@ public class CommandHandler {
     }
 
     private void handleAddHorseCommand() {
+        System.out.println("---------------------------------------------------------------");
         boolean isError = true;
         String input;
-        System.out.println("---------------------------------------------------------------");
         while (isError) {
             System.out.println("Enter horse's name");
             input = scanner.next();
@@ -265,6 +272,38 @@ public class CommandHandler {
                 System.out.println("Database error");
                 //TODO log
             } catch (AlreadyExistsException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        System.out.println("---------------------------------------------------------------");
+    }
+
+    private void handleFinishRaceCommand() {
+        System.out.println("---------------------------------------------------------------");
+        boolean isError = true;
+        String input;
+        int raceId;
+        while (isError) {
+            System.out.println("Enter ID of the race");
+            input = scanner.next();
+            if (input.equals("/exit"))
+                return;
+            try {
+                raceId = Integer.parseInt(input);
+                Race race = raceRepository.getByID(raceId);
+                System.out.println("Enter the winner horse name");
+                input = scanner.next();
+                if (input.equals("/exit"))
+                    return;
+                horseRepository.getByName(input);
+                race.setStatus(RaceStatus.FINISHED);
+                race.setWinnerHorseName(input);
+                System.out.println("Race " + race.getId() + " finished\n Race bank: " + race.getBank());
+                raceService.checkBets(race);
+                isError = false;
+            } catch (NumberFormatException e) {
+                System.out.println("ID must be number");
+            } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
             }
         }
