@@ -48,9 +48,7 @@ public class XmlRaceRepository implements XmlRepository, RaceRepository {
     }
 
     @Override
-    public void add(Race object) throws AlreadyExistsException, IOException {
-        if (races.containsKey(object.getId()))
-            throw new AlreadyExistsException("Race with id " + object.getId() + " already exists");
+    public void add(Race object) throws IOException {
         object.setId(++lastId);
         races.put(object.getId(), object);
         updateDataFile();

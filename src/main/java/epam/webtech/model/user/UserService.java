@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Service
 public class UserService {
@@ -29,8 +30,10 @@ public class UserService {
     public User registerNewUser(String name, String password) throws AlreadyExistsException, IOException {
         User newUser = new User();
         newUser.setName(name);
+        newUser.setAuthorityLvl(1);
         newUser.setPasswordHash(hashService.getHash(password));
         newUser.setBank(10000);
+        newUser.setBetsId(new ArrayList<>());
         userRepository.add(newUser);
         return newUser;
     }

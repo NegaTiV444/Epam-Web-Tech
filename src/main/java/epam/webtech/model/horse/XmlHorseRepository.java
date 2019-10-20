@@ -67,7 +67,7 @@ public class XmlHorseRepository implements XmlRepository, HorseRepository {
         if (horses.containsKey(object.getName()))
             horses.put(object.getName(), object);
         else
-            throw new NotFoundException("User with name " + object.getName() + " not found");
+            throw new NotFoundException("Horse with name " + object.getName() + " not found");
         updateDataFile();
     }
 
@@ -76,7 +76,7 @@ public class XmlHorseRepository implements XmlRepository, HorseRepository {
         if (horses.containsKey(object.getName()))
             horses.remove(object.getName());
         else
-            throw new NotFoundException("User with name " + object.getName() + " not found");
+            throw new NotFoundException("Horse with name " + object.getName() + " not found");
         updateDataFile();
     }
 

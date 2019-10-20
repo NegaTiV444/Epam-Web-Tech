@@ -4,16 +4,20 @@ import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.model.bet.Bet;
+import epam.webtech.model.bet.BetRepository;
 import epam.webtech.model.bet.XmlBetRepository;
 import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
+import epam.webtech.model.horse.HorseRepository;
 import epam.webtech.model.user.User;
+import epam.webtech.model.user.UserRepository;
 import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -21,19 +25,17 @@ import java.util.List;
 public class RaceService {
 
     @Autowired
-    private XmlBetRepository betRepository;
+    private BetRepository betRepository;
 
     @Autowired
-    private XmlUserRepository userRepository;
+    private UserRepository userRepository;
 
     public Race createRace(String[] horsesNames, Date date) {
         Race newRace = new Race();
         newRace.setHorsesNames(horsesNames);
         newRace.setDate(date);
         float[] odds = new float[horsesNames.length];
-        for (int i = 0; i < odds.length; i++) {
-            odds[i] = 1 + 1 / odds.length;
-        }
+        Arrays.fill(odds, 1 + 1 / odds.length);
         newRace.setOdds(odds);
         newRace.setBetsId(new ArrayList<>());
         return newRace;

@@ -51,8 +51,6 @@ public class XmlBetRepository implements XmlRepository, BetRepository {
 
     @Override
     public void add(Bet object) throws AlreadyExistsException, IOException {
-        if (bets.containsKey(object.getId()))
-            throw new AlreadyExistsException("Bet with id " + object.getId() + " already exists");
         object.setId(++lastId);
         bets.put(object.getId(), object);
         updateDataFile();

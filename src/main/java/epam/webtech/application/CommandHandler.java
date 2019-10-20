@@ -18,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,6 +30,7 @@ public class CommandHandler {
     private boolean isRunning = true;
     private Scanner scanner = new Scanner(System.in);
     private User currentUser;
+    int authorityLvl = 0;
 
     @Autowired
     private UserService userService;
@@ -57,19 +61,38 @@ public class CommandHandler {
                     handleLoginCommand();
                     break;
                 case "/exit":
+                case "exit":
                     handleExitCommand();
                     break;
                 case "/races":
-                    handleRacesCommand();
+                    if (authorityLvl >= Command.RACES.getAuthorityLvl())
+                        handleRacesCommand();
+                    else
+                        handleWrongCommand();
                     break;
                 case "/bets":
-                    handleBetsCommand();
+                    if (authorityLvl >= Command.BETS.getAuthorityLvl())
+                        handleBetsCommand();
+                    else
+                        handleWrongCommand();
                     break;
-                case "/make bet":
-                    handleMakeBetCommand();
+                case "/addrace":
+                    if (authorityLvl >= Command.ADD_RACE.getAuthorityLvl())
+                        handleAddRaceCommand();
+                    else
+                        handleWrongCommand();
+                    break;
+                case "/makebet":
+                    if (authorityLvl >= Command.MAKE_BET.getAuthorityLvl())
+                        handleMakeBetCommand();
+                    else
+                        handleWrongCommand();
                     break;
                 case "/me":
-                    handleMeCommand();
+                    if (authorityLvl >= Command.ME.getAuthorityLvl())
+                        handleMeCommand();
+                    else
+                        handleWrongCommand();
                     break;
                 case "/help":
                     handleHelpCommand();
@@ -104,10 +127,11 @@ public class CommandHandler {
                     continue;
                 try {
                     currentUser = userService.registerNewUser(name, password);
+                    authorityLvl = currentUser.getAuthorityLvl();
                     System.out.println("Registration successful\nCurrent user: " + currentUser.getName());
                     isError = false;
                 } catch (IOException e) {
-                    //Database error;
+                    System.out.println("Database error");
                     //TODO log
                 } catch (AlreadyExistsException e) {
                     System.out.println("User " + name + " already exists");
@@ -140,6 +164,7 @@ public class CommandHandler {
                     continue;
                 try {
                     currentUser = userService.logIn(name, password);
+                    authorityLvl = currentUser.getAuthorityLvl();
                     System.out.println("LogIn successful\nCurrent user: " + currentUser.getName());
                     isError = false;
                 } catch (NotFoundException e) {
@@ -150,6 +175,66 @@ public class CommandHandler {
             }
 
         }
+    }
+
+    private void handleAddRaceCommand() {
+        int horseCount = 0;
+        boolean isError = true;
+        String input;
+        while (isError) {
+            System.out.println("Enter number of horses (2-6)");
+            input = scanner.next();
+            if (input.equals("/exit"))
+                return;
+            try {
+                horseCount = Integer.parseInt(input);
+                isError = false;
+            } catch (NumberFormatException e) {
+                System.out.println("Wrong input");
+            }
+        }
+        isError = true;
+        String[] horseNames = new String[horseCount];
+        while (isError) {
+            for (int i = 0; i < horseCount; i++) {
+                System.out.println("Enter the name of horse number " + (i + 1));
+                input = scanner.next();
+                if (input.equals("/exit"))
+                    return;
+                try {
+                    horseRepository.getByName(input);
+                    horseNames[i] = input;
+                } catch (NotFoundException e) {
+                    System.out.println(e.getMessage());
+                    break;
+                }
+            }
+        }
+        isError = true;
+        Date date = null;
+        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+        while (isError) {
+            System.out.println("Enter date of the race (format: MM-dd HH:mm)");
+            input = scanner.next();
+            if (input.equals("/exit"))
+                return;
+            try {
+                date = format.parse(input);
+                isError = false;
+            } catch (ParseException e) {
+                System.out.println("Wrong format");
+            }
+        }
+        try {
+            raceRepository.add(raceService.createRace(horseNames, date));
+        } catch (IOException e) {
+            System.out.println("Database error");
+            //TODO log
+        } catch (AlreadyExistsException e) {
+            //TODO log
+        }
+        System.out.println("Race successfully added");
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void handleExitCommand() {
@@ -163,13 +248,13 @@ public class CommandHandler {
 
     private void handleRacesCommand() {
         List<Race> races = raceRepository.findAll();
-        System.out.println("\n-----------------######   RACES   ######-----------------");
+        System.out.println("\n-----------------######      RACES      ######-----------------");
         for (Race race : races) {
-            System.out.println("----------------------------------------------------------------");
+            System.out.println("---------------------------------------------------------------");
             printRace(race);
 
         }
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void printRace(Race race) {
@@ -181,7 +266,7 @@ public class CommandHandler {
         for (int i = 0; i < horses.length; i++) {
             sb = new StringBuilder("   ");
             sb.append(horses[i]);
-            for (int j = 20 - horses[i].length(); i > 0; j--) {
+            for (int j = 20 - horses[i].length(); j > 0; j--) {
                 sb.append(" ");
             }
             sb.append(odds[i]);
@@ -196,7 +281,7 @@ public class CommandHandler {
             System.out.println("You haven't active bets");
         else {
             for (Bet bet : bets) {
-                System.out.println("----------------------------------------------------------------");
+                System.out.println("---------------------------------------------------------------");
                 System.out.println("RACE: ");
                 try {
                     printRace(raceRepository.getByID(bet.getRaceId()));
@@ -206,8 +291,8 @@ public class CommandHandler {
                 }
                 System.out.println("\nYour bet:\n   Horse: " + bet.getHorseName() + "\nAmount: " + bet.getAmount() + "\n");
             }
-            System.out.println("----------------------------------------------------------------");
         }
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void handleMakeBetCommand() {
@@ -246,7 +331,7 @@ public class CommandHandler {
                 //TODO log
             }
         System.out.println("Bet added successfully");
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void handleMeCommand() {
@@ -254,16 +339,17 @@ public class CommandHandler {
         System.out.println("\n-----------------######   YOUR PROFILE   ######-----------------");
         System.out.println("Name: " + currentUser.getName() + "\nTotal money: " + currentUser.getBank() +
                 "\nActive bets: " + currentUser.getBetsId().size());
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void handleHelpCommand() {
-        System.out.println("----------------------------------------------------------------");
+        int authorityLvl = currentUser == null ? 0 : currentUser.getAuthorityLvl();
+        System.out.println("---------------------------------------------------------------");
         for (Command command : Command.values()) {
-            System.out.println(command.getName() + "---->" + command.getDescription());
+            if (command.getAuthorityLvl() <= authorityLvl)
+                System.out.println(command.getName() + "---->" + command.getDescription());
         }
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------");
     }
 
     private void handleWrongCommand() {
