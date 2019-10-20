@@ -7,7 +7,7 @@ import lombok.Data;
 public class Horse extends Entity implements Comparable<Horse> {
 
     private String name;
-    private int winsCounter;
+    private int winsCounter = 0;
 
     @Override
     public int compareTo(Horse o) {

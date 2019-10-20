@@ -30,7 +30,7 @@ public class CommandHandler {
     private boolean isRunning = true;
     private Scanner scanner = new Scanner(System.in);
     private User currentUser;
-    int authorityLvl = 0;
+    private int authorityLvl = 0;
 
     @Autowired
     private UserService userService;
@@ -79,6 +79,12 @@ public class CommandHandler {
                 case "/addrace":
                     if (authorityLvl >= Command.ADD_RACE.getAuthorityLvl())
                         handleAddRaceCommand();
+                    else
+                        handleWrongCommand();
+                    break;
+                case "/addhorse":
+                    if (authorityLvl >= Command.ADD_HORSE.getAuthorityLvl())
+                        handleAddHorseCommand();
                     else
                         handleWrongCommand();
                     break;
@@ -136,7 +142,6 @@ public class CommandHandler {
                 } catch (AlreadyExistsException e) {
                     System.out.println("User " + name + " already exists");
                 }
-
             }
         }
     }
@@ -220,6 +225,10 @@ public class CommandHandler {
                 return;
             try {
                 date = format.parse(input);
+                if (date.compareTo(new Date()) <= 0) {
+                    System.out.println("Wrong date");
+                    continue;
+                }
                 isError = false;
             } catch (ParseException e) {
                 System.out.println("Wrong format");
@@ -234,6 +243,31 @@ public class CommandHandler {
             //TODO log
         }
         System.out.println("Race successfully added");
+        System.out.println("---------------------------------------------------------------");
+    }
+
+    private void handleAddHorseCommand() {
+        boolean isError = true;
+        String input;
+        System.out.println("---------------------------------------------------------------");
+        while (isError) {
+            System.out.println("Enter horse's name");
+            input = scanner.next();
+            if (input.equals("/exit"))
+                return;
+            Horse horse = new Horse();
+            horse.setName(input);
+            try {
+                horseRepository.add(horse);
+                isError = false;
+                System.out.println("Horse successfully added");
+            } catch (IOException e) {
+                System.out.println("Database error");
+                //TODO log
+            } catch (AlreadyExistsException e) {
+                System.out.println(e.getMessage());
+            }
+        }
         System.out.println("---------------------------------------------------------------");
     }
 

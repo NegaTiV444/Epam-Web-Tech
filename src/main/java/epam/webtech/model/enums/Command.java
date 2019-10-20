@@ -7,6 +7,8 @@ public enum Command {
     EXIT("/exit", "Log out of the system / stop application", 0),
     RACES("/races", "Show all races", 0),
     ADD_RACE("/addrace", "Add new race (only for administrators)", 2),
+    ADD_HORSE("/addhorse", "Add new horse (only for administrators)", 2),
+    FINISH_RACE("/finishrace", "Finish active race (only for administrators)", 2),
     BETS("/bets", "Show your bets", 1),
     MAKE_BET("/makebet", "Make a new bet", 1),
     ME("/me", "Show your account's information", 1),
