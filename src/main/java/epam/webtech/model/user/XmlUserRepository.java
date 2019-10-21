@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implementation of  {@link UserRepository} for working with XML
+ * @author NegaTiV444
+ * @version 1.0
+ */
+
 @Repository
 public class XmlUserRepository implements XmlRepository, UserRepository {
 

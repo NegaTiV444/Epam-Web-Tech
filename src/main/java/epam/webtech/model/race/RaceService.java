@@ -5,13 +5,10 @@ import epam.webtech.exceptions.NotEnoughMoneyException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.model.bet.Bet;
 import epam.webtech.model.bet.BetRepository;
-import epam.webtech.model.bet.XmlBetRepository;
 import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
-import epam.webtech.model.horse.HorseRepository;
 import epam.webtech.model.user.User;
 import epam.webtech.model.user.UserRepository;
-import epam.webtech.model.user.XmlUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +27,14 @@ public class RaceService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RaceRepository raceRepository;
+
     public Race createRace(String[] horsesNames, Date date) {
         Race newRace = new Race();
         newRace.setHorsesNames(horsesNames);
         newRace.setDate(date);
+        newRace.setStatus(RaceStatus.WAITING);
         float[] odds = new float[horsesNames.length];
         Arrays.fill(odds, 1 + 1 / odds.length);
         newRace.setOdds(odds);
@@ -42,23 +43,25 @@ public class RaceService {
     }
 
     public void addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException, AlreadyExistsException, IOException {
-        if (user.getBank() >= amount) {
-            List<Bet> bets = betRepository.findAll();
-            boolean isError = bets.stream()
-                    .anyMatch(bet -> (bet.getUserName().equals(user.getName()) && (bet.getRaceId() == race.getId())));
-            if (isError)
-                throw new AlreadyExistsException("Your already have bet on this race");
-            user.setBank(user.getBank() - amount);
-            Bet newBet = new Bet();
-            newBet.setUserName(user.getName());
-            newBet.setAmount(amount);
-            newBet.setRaceId(race.getId());
-            newBet.setHorseName(horse.getName());
-            updateOdds(race, newBet);
-            race.setBank(race.getBank() + amount);
-            betRepository.add(newBet);
-        } else
-            throw new NotEnoughMoneyException("Sorry, your don't have enough money");
+        if (race.getStatus().equals(RaceStatus.WAITING)) {
+            if (user.getBank() >= amount) {
+                List<Bet> bets = betRepository.findAll();
+                boolean isError = bets.stream()
+                        .anyMatch(bet -> (bet.getUserName().equals(user.getName()) && (bet.getRaceId() == race.getId())));
+                if (isError)
+                    throw new AlreadyExistsException("Your already have bet on this race");
+                user.setBank(user.getBank() - amount);
+                Bet newBet = new Bet();
+                newBet.setUserName(user.getName());
+                newBet.setAmount(amount);
+                newBet.setRaceId(race.getId());
+                newBet.setHorseName(horse.getName());
+                updateOdds(race, newBet);
+                race.setBank(race.getBank() + amount);
+                betRepository.add(newBet);
+            } else
+                throw new NotEnoughMoneyException("Sorry, your don't have enough money");
+        }
     }
 
     private void updateOdds(Race race, Bet bet) throws AlreadyExistsException, IOException {
@@ -79,7 +82,7 @@ public class RaceService {
                         }
                     })
                     .count();
-            odds[i] = 1 + 1 - (counter + 1) / totalBets;
+            odds[i] = totalBets / (counter + 1);
         }
     }
 
@@ -107,10 +110,16 @@ public class RaceService {
                             //TODO log
                         }
                     }
-                } catch (NotFoundException e) {
+                    betRepository.delete(bet);
+                } catch (NotFoundException | IOException e) {
                     //TODO log
                 }
 
+            }
+            try {
+                raceRepository.delete(race);
+            } catch (NotFoundException | IOException e) {
+                //TODO log
             }
         }
     }

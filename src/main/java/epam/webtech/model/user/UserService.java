@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Service for working with the {@link User}
+ * @author NegaTiV444
+ * @version 1.0
+ */
+
 @Service
 public class UserService {
 
@@ -19,6 +25,15 @@ public class UserService {
     @Autowired
     private HashService hashService;
 
+    /**
+     * Verifies the received password and the password stored in the database for a user with the received name
+     * @param name - Username
+     * @param password - password
+     * @return User from database if the password is correct
+     * @throws NotFoundException if there is no User with such name in database
+     * @throws WrongPasswordException if password-hash aren't equal
+     * @see User
+     */
     public User logIn(String name, String password) throws NotFoundException, WrongPasswordException {
         User user = userRepository.getByName(name);
         if (user.getPasswordHash().equals(hashService.getHash(password)))
@@ -26,6 +41,16 @@ public class UserService {
         else
             throw new WrongPasswordException("Wrong password");
     }
+
+    /**
+     * Create new User and save to database
+     * @param name - Username
+     * @param password - password
+     * @return User if there is no User with such name in database
+     * @throws AlreadyExistsException if there is User with such name in database
+     * @throws IOException if there are problems with database-connection
+     * @see User
+     */
 
     public User registerNewUser(String name, String password) throws AlreadyExistsException, IOException {
         User newUser = new User();

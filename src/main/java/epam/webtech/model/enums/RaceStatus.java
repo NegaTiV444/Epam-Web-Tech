@@ -2,7 +2,7 @@ package epam.webtech.model.enums;
 
 public enum RaceStatus {
 
-    VAITING(1),
+    WAITING(1),
     IN_PROGRESS(0),
     FINISHED(2);
 

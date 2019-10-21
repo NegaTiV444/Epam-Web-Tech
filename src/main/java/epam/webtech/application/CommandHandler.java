@@ -221,13 +221,15 @@ public class CommandHandler {
                     break;
                 }
             }
+            isError = false;
         }
         isError = true;
         Date date = null;
-        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         while (isError) {
-            System.out.println("Enter date of the race (format: MM-dd HH:mm)");
-            input = scanner.next();
+            System.out.println("Enter date of the race (example: 31/08/1999 12:00)");
+            scanner.nextLine();
+            input = scanner.nextLine();
             if (input.equals("/exit"))
                 return;
             try {
@@ -295,7 +297,8 @@ public class CommandHandler {
                 input = scanner.next();
                 if (input.equals("/exit"))
                     return;
-                horseRepository.getByName(input);
+                Horse winner = horseRepository.getByName(input);
+                winner.setWinsCounter(winner.getWinsCounter() + 1);
                 race.setStatus(RaceStatus.FINISHED);
                 race.setWinnerHorseName(input);
                 System.out.println("Race " + race.getId() + " finished\n Race bank: " + race.getBank());
