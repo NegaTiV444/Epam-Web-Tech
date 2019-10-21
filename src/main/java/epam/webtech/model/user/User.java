@@ -20,8 +20,6 @@ public class User extends Entity implements Comparable<User> {
 
     /** User name */
     private String name;
-    /** List of id of bets a user has */
-    private List<Integer> betsId;
     /** Password hash */
     private String passwordHash;
     /** Level of authority (1 - simple user, 2 - admin)*/

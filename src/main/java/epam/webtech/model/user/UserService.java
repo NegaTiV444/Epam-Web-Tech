@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Service for working with the {@link User}
@@ -58,7 +57,6 @@ public class UserService {
         newUser.setAuthorityLvl(1);
         newUser.setPasswordHash(hashService.getHash(password));
         newUser.setBank(10000);
-        newUser.setBetsId(new ArrayList<>());
         userRepository.add(newUser);
         return newUser;
     }

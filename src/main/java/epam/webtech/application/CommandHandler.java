@@ -413,8 +413,7 @@ public class CommandHandler {
     private void handleMeCommand() {
 
         System.out.println("\n-----------------######   YOUR PROFILE   ######-----------------");
-        System.out.println("Name: " + currentUser.getName() + "\nTotal money: " + currentUser.getBank() +
-                "\nActive bets: " + currentUser.getBetsId().size());
+        System.out.println("Name: " + currentUser.getName() + "\nTotal money: " + currentUser.getBank());
         System.out.println("---------------------------------------------------------------");
     }
 

@@ -66,6 +66,8 @@ public class RaceService {
 
     private void updateOdds(Race race, Bet bet) throws AlreadyExistsException, IOException {
         betRepository.add(bet);
+        if (race.getBetsId() == null)
+            race.setBetsId(new ArrayList<>());
         race.getBetsId().add(bet.getId());
         String[] horsesNames = race.getHorsesNames();
         float[] odds = race.getOdds();
