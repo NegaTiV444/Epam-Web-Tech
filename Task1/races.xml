@@ -1,0 +1,20 @@
+<Values>
+    <item>
+        <id>1</id>
+        <horsesNames>
+            <horsesNames>Horse1</horsesNames>
+            <horsesNames>Horse2</horsesNames>
+            <horsesNames>Horse3</horsesNames>
+        </horsesNames>
+        <winnerHorseName/>
+        <status>WAITING</status>
+        <date>1571821200000</date>
+        <betsId/>
+        <odds>
+            <odds>1.0</odds>
+            <odds>1.0</odds>
+            <odds>1.0</odds>
+        </odds>
+        <bank>0</bank>
+    </item>
+</Values>
