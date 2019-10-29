@@ -59,6 +59,7 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
                 //TODO log
             }
         });
+        System.out.println("Migration successful");
         return bets;
     }
 

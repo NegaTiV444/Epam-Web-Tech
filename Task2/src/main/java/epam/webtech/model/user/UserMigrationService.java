@@ -59,6 +59,7 @@ public class UserMigrationService implements XmlMigrationService<User> {
                 //TODO log
             }
         });
+        System.out.println("Migration successful");
         return users;
     }
 

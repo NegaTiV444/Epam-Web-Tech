@@ -5,11 +5,10 @@ import epam.webtech.model.enums.RaceStatus;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Data
-public class  Race extends Entity implements Comparable<Race> {
+public class Race extends Entity implements Comparable<Race> {
 
     @Override
     public int compareTo(Race o) {

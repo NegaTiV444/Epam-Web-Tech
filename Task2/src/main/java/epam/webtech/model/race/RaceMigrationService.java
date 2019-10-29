@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.ValidationException;
-import epam.webtech.model.MigrationService;
 import epam.webtech.model.XmlMigrationService;
 import epam.webtech.services.JdbcService;
 import epam.webtech.services.XsdValidationService;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 public class RaceMigrationService implements XmlMigrationService<Race> {
@@ -60,6 +58,7 @@ public class RaceMigrationService implements XmlMigrationService<Race> {
                 //TODO log
             }
         });
+        System.out.println("Migration successful");
         return races;
     }
 
@@ -79,7 +78,7 @@ public class RaceMigrationService implements XmlMigrationService<Race> {
             if (horsesString.length() > 1)
                 horsesString.deleteCharAt(horsesString.length() - 1);
             query = "INSERT INTO " + TABLE + " (id, race_date, status, horses_names, winner ) VALUES ( '"
-                    + race.getId() + "', '" + race.getDate() + "', '" + race.getStatus().getPriority() + "', '"
+                    + race.getId() + "', '" + race.getDate().getTime() + "', '" + race.getStatus().getPriority() + "', '"
                     + horsesString.toString() + "', '" + race.getWinnerHorseName() + "' );";
             preparedStatement.executeUpdate(query);
             resultSet.close();

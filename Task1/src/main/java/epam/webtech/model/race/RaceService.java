@@ -42,6 +42,7 @@ public class RaceService {
         return newRace;
     }
 
+    //TODO fix ID generation
     public void addBet(User user, Race race, Horse horse, int amount) throws NotEnoughMoneyException, AlreadyExistsException, IOException {
         if (race.getStatus().equals(RaceStatus.WAITING)) {
             if (user.getBank() >= amount) {
@@ -65,7 +66,6 @@ public class RaceService {
     }
 
     private void updateOdds(Race race, Bet bet) throws AlreadyExistsException, IOException {
-        betRepository.add(bet);
         if (race.getBetsId() == null)
             race.setBetsId(new ArrayList<>());
         race.getBetsId().add(bet.getId());

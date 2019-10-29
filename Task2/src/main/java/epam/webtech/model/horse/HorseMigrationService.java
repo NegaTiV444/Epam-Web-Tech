@@ -59,6 +59,7 @@ public class HorseMigrationService implements XmlMigrationService<Horse> {
                 //TODO log
             }
         });
+        System.out.println("Migration successful");
         return horses;
     }
 
