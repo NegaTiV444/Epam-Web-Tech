@@ -16,7 +16,7 @@ public class Application {
     private static FileService fileService = FileService.getInstance();
 
     public static void main(String[] args) {
-        System.out.println("Hello Java");
+        System.out.println("XML to MySQL migration tool (using XSD-validation)");
         try {
             horseMigrationService.validateAndMigrate(fileService.checkFile("horses.xml"));
             betMigrationService.validateAndMigrate(fileService.checkFile("bets.xml"));
