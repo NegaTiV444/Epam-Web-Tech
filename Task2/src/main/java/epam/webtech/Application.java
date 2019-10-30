@@ -18,7 +18,7 @@ public class Application {
     private static UserMigrationService userMigrationService = UserMigrationService.getInstance();
     private static FileService fileService = FileService.getInstance();
 
-    private static final Logger logger = LogManager.getLogger(JdbcService.class);
+    private static final Logger logger = LogManager.getLogger(Application.class);
 
     public static void main(String[] args) {
         System.out.println("XML to MySQL migration tool (using XSD-validation)");
