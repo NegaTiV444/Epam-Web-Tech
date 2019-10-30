@@ -7,6 +7,8 @@ import epam.webtech.exceptions.ValidationException;
 import epam.webtech.model.XmlMigrationService;
 import epam.webtech.services.JdbcService;
 import epam.webtech.services.XsdValidationService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,11 +17,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BetMigrationService implements XmlMigrationService<Bet> {
 
     private static final String XSD_FILE_NAME = "bets.xsd";
     private static final String TABLE = "bets";
+
+    private final Logger logger = LogManager.getLogger(BetMigrationService.class);
 
     private XsdValidationService validationService = XsdValidationService.getInstance();
     private JdbcService jdbcService = JdbcService.getInstance();
@@ -48,17 +53,20 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
             bets = xmlMapper.readValue(xml, new TypeReference<List<Bet>>() {
             });
         } catch (IOException e) {
-            //TODO log
+            logger.error(e.getMessage());
             throw new ValidationException("Error " + e.getMessage());
         }
+        AtomicInteger counter = new AtomicInteger();
         bets.forEach(bet -> {
             try {
                 saveBet(bet);
+                counter.getAndIncrement();
             } catch (AlreadyExistsException e) {
                 System.out.println(e.getMessage());
-                //TODO log
+                logger.debug(e);
             }
         });
+        logger.debug("Total bets: " + bets.size() + ", successful migrated: " + counter);
         System.out.println("Migration successful");
         return bets;
     }
@@ -70,7 +78,6 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
             PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
-                //TODO log
                 throw new AlreadyExistsException("Record Bet with id " + bet.getId() + " already exists id database");
             }
             query = "INSERT INTO " + TABLE + " (id, amount, race_id, horse_name, user_name ) VALUES ( '"
@@ -80,7 +87,7 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
             resultSet.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            //TODO log
+            logger.fatal(e);
             System.exit(1);
         }
     }

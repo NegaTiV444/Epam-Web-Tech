@@ -1,0 +1,38 @@
+2019-10-31 00:04:40,350 DEBUG e.w.s.JdbcService [main] Connection to jdbc:mysql://localhost:3306/epam?serverTimezone=UTC successful
+2019-10-31 00:04:40,699 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse3 already exists id database
+2019-10-31 00:04:40,700 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse1 already exists id database
+2019-10-31 00:04:40,701 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse2 already exists id database
+2019-10-31 00:04:40,701 DEBUG e.w.m.h.HorseMigrationService [main] Total horses: 3, successful migrated: 0
+2019-10-31 00:04:40,711 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 1 already exists id database
+2019-10-31 00:04:40,712 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 2 already exists id database
+2019-10-31 00:04:40,713 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 3 already exists id database
+2019-10-31 00:04:40,714 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 4 already exists id database
+2019-10-31 00:04:40,715 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 5 already exists id database
+2019-10-31 00:04:40,716 DEBUG e.w.m.b.BetMigrationService [main] Total bets: 5, successful migrated: 0
+2019-10-31 00:04:40,730 DEBUG e.w.m.r.RaceMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Race with id 1 already exists id database
+2019-10-31 00:04:40,741 DEBUG e.w.m.r.RaceMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Race with id 2 already exists id database
+2019-10-31 00:04:40,741 DEBUG e.w.m.r.RaceMigrationService [main] Total races: 2, successful migrated: 0
+2019-10-31 00:04:40,748 INFO e.w.m.u.UserMigrationService [main] users.xml validated successful. Used scheme: users.xsd
+2019-10-31 00:04:40,752 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name TestUser2 already exists id database
+2019-10-31 00:04:40,753 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name TestUser1 already exists id database
+2019-10-31 00:04:40,755 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name Admin already exists id database
+2019-10-31 00:04:40,755 DEBUG e.w.m.u.UserMigrationService [main] Total users: 3, successful migrated: 0
+2019-10-31 00:05:41,535 DEBUG e.w.s.JdbcService [main] Connection to jdbc:mysql://localhost:3306/epam?serverTimezone=UTC successful
+2019-10-31 00:05:41,928 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse3 already exists id database
+2019-10-31 00:05:41,930 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse1 already exists id database
+2019-10-31 00:05:41,931 DEBUG e.w.m.h.HorseMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Horse with name Horse2 already exists id database
+2019-10-31 00:05:41,931 DEBUG e.w.m.h.HorseMigrationService [main] Total horses: 3, successful migrated: 0
+2019-10-31 00:05:41,943 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 1 already exists id database
+2019-10-31 00:05:41,944 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 2 already exists id database
+2019-10-31 00:05:41,946 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 3 already exists id database
+2019-10-31 00:05:41,947 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 4 already exists id database
+2019-10-31 00:05:41,948 DEBUG e.w.m.b.BetMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Bet with id 5 already exists id database
+2019-10-31 00:05:41,948 DEBUG e.w.m.b.BetMigrationService [main] Total bets: 5, successful migrated: 0
+2019-10-31 00:05:41,965 DEBUG e.w.m.r.RaceMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Race with id 1 already exists id database
+2019-10-31 00:05:41,976 DEBUG e.w.m.r.RaceMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record Race with id 2 already exists id database
+2019-10-31 00:05:41,977 DEBUG e.w.m.r.RaceMigrationService [main] Total races: 2, successful migrated: 0
+2019-10-31 00:05:41,982 INFO e.w.m.u.UserMigrationService [main] users.xml validated successful. Used scheme: users.xsd
+2019-10-31 00:05:41,987 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name TestUser2 already exists id database
+2019-10-31 00:05:41,988 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name TestUser1 already exists id database
+2019-10-31 00:05:41,989 DEBUG e.w.m.u.UserMigrationService [main] epam.webtech.exceptions.AlreadyExistsException: Record User with name Admin already exists id database
+2019-10-31 00:05:41,989 DEBUG e.w.m.u.UserMigrationService [main] Total users: 3, successful migrated: 0

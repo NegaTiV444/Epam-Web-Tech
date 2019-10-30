@@ -1,6 +1,8 @@
 package epam.webtech.services;
 
 import epam.webtech.exceptions.ValidationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -11,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class XsdValidationService {
+
+    private final Logger logger = LogManager.getLogger(XsdValidationService.class);
 
     private XsdValidationService() {
     }
@@ -31,9 +35,11 @@ public class XsdValidationService {
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(xmlFile));
         } catch (IOException e) {
+            logger.error(e);
             System.out.println("Exception: " + e.getMessage());
             throw new ValidationException("Validation failed " + e.getMessage());
         } catch (org.xml.sax.SAXException e) {
+            logger.debug(xmlFile.getName() + " is NOT valid reason:" + e);
             throw new ValidationException(xmlFile.getName() + " is NOT valid reason:" + e);
         }
     }

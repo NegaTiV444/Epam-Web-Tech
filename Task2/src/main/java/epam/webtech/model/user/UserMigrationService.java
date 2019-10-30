@@ -7,6 +7,8 @@ import epam.webtech.exceptions.ValidationException;
 import epam.webtech.model.XmlMigrationService;
 import epam.webtech.services.JdbcService;
 import epam.webtech.services.XsdValidationService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,11 +17,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserMigrationService implements XmlMigrationService<User> {
 
     private static final String XSD_FILE_NAME = "users.xsd";
     private static final String TABLE = "users";
+
+    private static final Logger logger = LogManager.getLogger(UserMigrationService.class);
 
     private XsdValidationService validationService = XsdValidationService.getInstance();
     private JdbcService jdbcService = JdbcService.getInstance();
@@ -41,24 +46,27 @@ public class UserMigrationService implements XmlMigrationService<User> {
     public List<User> validateAndMigrate(File xmlDataFile) throws ValidationException {
         File xsdFile = new File(XSD_FILE_NAME);
         validationService.validate(xmlDataFile, xsdFile);
-        System.out.println("Validation successful");
+        logger.info(xmlDataFile.getName() + " validated successful. Used scheme: " + xsdFile.getName());
         List<User> users;
         try {
             String xml = inputStreamToString(new FileInputStream(xmlDataFile));
             users = xmlMapper.readValue(xml, new TypeReference<List<User>>() {
             });
         } catch (IOException e) {
-            //TODO log
+            logger.error(e.getMessage());
             throw new ValidationException("Error " + e.getMessage());
         }
+        AtomicInteger counter = new AtomicInteger();
         users.forEach(user -> {
             try {
                 saveUser(user);
+                counter.getAndIncrement();
             } catch (AlreadyExistsException e) {
+                logger.debug(e);
                 System.out.println(e.getMessage());
-                //TODO log
             }
         });
+        logger.debug("Total users: " + users.size() + ", successful migrated: " + counter);
         System.out.println("Migration successful");
         return users;
     }
@@ -70,7 +78,6 @@ public class UserMigrationService implements XmlMigrationService<User> {
             PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
-                //TODO log
                 throw new AlreadyExistsException("Record User with name " + user.getName() + " already exists id database");
             }
             query = "INSERT INTO " + TABLE + " (id, name, passwordHash, bank, authorityLvl ) VALUES ( '"
@@ -80,7 +87,7 @@ public class UserMigrationService implements XmlMigrationService<User> {
             resultSet.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            //TODO log
+            logger.fatal(e);
             System.exit(1);
         }
     }
