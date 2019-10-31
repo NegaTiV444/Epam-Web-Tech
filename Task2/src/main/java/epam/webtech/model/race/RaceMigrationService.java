@@ -1,35 +1,27 @@
 package epam.webtech.model.race;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.ValidationException;
-import epam.webtech.model.XmlMigrationService;
+import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
-import epam.webtech.services.XsdValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RaceMigrationService implements XmlMigrationService<Race> {
+public class RaceMigrationService implements MigrationService<Race> {
 
-    private static final String XSD_FILE_NAME = "races.xsd";
     private static final String TABLE = "races";
+    private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? ;";
+    private static final String INSERT_QUERY = "INSERT INTO " + TABLE
+            + " (id, race_date, status, horses_names, winner) VALUES (?, ?, ?, ?, ?)";
 
     private final Logger logger = LogManager.getLogger(RaceMigrationService.class);
-
-    private XsdValidationService validationService = XsdValidationService.getInstance();
-    private JdbcService jdbcService = JdbcService.getInstance();
-
-    private XmlMapper xmlMapper = new XmlMapper();
+    private final JdbcService jdbcService = JdbcService.getInstance();
 
     private RaceMigrationService() {
     }
@@ -43,19 +35,7 @@ public class RaceMigrationService implements XmlMigrationService<Race> {
     }
 
     @Override
-    public List<Race> validateAndMigrate(File xmlDataFile) throws ValidationException {
-        File xsdFile = new File(XSD_FILE_NAME);
-        validationService.validate(xmlDataFile, xsdFile);
-        System.out.println("Validation successful");
-        List<Race> races;
-        try {
-            String xml = inputStreamToString(new FileInputStream(xmlDataFile));
-            races = xmlMapper.readValue(xml, new TypeReference<List<Race>>() {
-            });
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            throw new ValidationException("Error " + e.getMessage());
-        }
+    public int migrate(List<Race> races) {
         AtomicInteger counter = new AtomicInteger();
         races.forEach(race -> {
             try {
@@ -67,15 +47,16 @@ public class RaceMigrationService implements XmlMigrationService<Race> {
             }
         });
         logger.debug("Total races: " + races.size() + ", successful migrated: " + counter);
-        System.out.println("Migration successful");
-        return races;
+        System.out.println(counter + " races migrated");
+        return counter.get();
     }
 
     private void saveRace(Race race) throws AlreadyExistsException {
-        ResultSet resultSet;
+        ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
-            String query = "SELECT * FROM " + TABLE + " WHERE id = '" + race.getId() + "' ;";
-            PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(query);
+            preparedStatement = jdbcService.getConnection().prepareStatement(SELECT_QUERY);
+            preparedStatement.setInt(1, race.getId());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
                 throw new AlreadyExistsException("Record Race with id " + race.getId() + " already exists id database");
@@ -85,15 +66,24 @@ public class RaceMigrationService implements XmlMigrationService<Race> {
                 horsesString.append(name + ",");
             if (horsesString.length() > 1)
                 horsesString.deleteCharAt(horsesString.length() - 1);
-            query = "INSERT INTO " + TABLE + " (id, race_date, status, horses_names, winner ) VALUES ( '"
-                    + race.getId() + "', '" + race.getDate().getTime() + "', '" + race.getStatus().getPriority() + "', '"
-                    + horsesString.toString() + "', '" + race.getWinnerHorseName() + "' );";
-            preparedStatement.executeUpdate(query);
-            resultSet.close();
-            preparedStatement.close();
+            preparedStatement = jdbcService.getConnection().prepareStatement(INSERT_QUERY);
+            preparedStatement.setInt(1, race.getId());
+            preparedStatement.setString(2, race.getDate().toString());
+            preparedStatement.setInt(3, race.getStatus().getPriority());
+            preparedStatement.setString(4, horsesString.toString());
+            preparedStatement.setString(5, race.getWinnerHorseName());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             logger.fatal(e);
             System.exit(1);
+        } finally {
+            try {
+                resultSet.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error(e);
+            }
+
         }
     }
 }

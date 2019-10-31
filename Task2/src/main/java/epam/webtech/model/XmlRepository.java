@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public interface XmlMigrationService<T> extends MigrationService<T> {
+public interface XmlRepository {
 
     default String inputStreamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();

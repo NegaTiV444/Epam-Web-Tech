@@ -1,35 +1,27 @@
 package epam.webtech.model.user;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
-import epam.webtech.exceptions.ValidationException;
-import epam.webtech.model.XmlMigrationService;
+import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
-import epam.webtech.services.XsdValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class UserMigrationService implements XmlMigrationService<User> {
+public class UserMigrationService implements MigrationService<User> {
 
-    private static final String XSD_FILE_NAME = "users.xsd";
     private static final String TABLE = "users";
+    private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE name = ? ;";
+    private static final String INSERT_QUERY = "INSERT INTO " + TABLE
+            + " (id, name, passwordHash, bank, authorityLvl) VALUES (?, ?, ?, ?, ?)";
 
     private static final Logger logger = LogManager.getLogger(UserMigrationService.class);
 
-    private XsdValidationService validationService = XsdValidationService.getInstance();
     private JdbcService jdbcService = JdbcService.getInstance();
-
-    private XmlMapper xmlMapper = new XmlMapper();
 
     private UserMigrationService() {
     }
@@ -43,19 +35,7 @@ public class UserMigrationService implements XmlMigrationService<User> {
     }
 
     @Override
-    public List<User> validateAndMigrate(File xmlDataFile) throws ValidationException {
-        File xsdFile = new File(XSD_FILE_NAME);
-        validationService.validate(xmlDataFile, xsdFile);
-        logger.info(xmlDataFile.getName() + " validated successful. Used scheme: " + xsdFile.getName());
-        List<User> users;
-        try {
-            String xml = inputStreamToString(new FileInputStream(xmlDataFile));
-            users = xmlMapper.readValue(xml, new TypeReference<List<User>>() {
-            });
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            throw new ValidationException("Error " + e.getMessage());
-        }
+    public int migrate(List<User> users) {
         AtomicInteger counter = new AtomicInteger();
         users.forEach(user -> {
             try {
@@ -67,28 +47,37 @@ public class UserMigrationService implements XmlMigrationService<User> {
             }
         });
         logger.debug("Total users: " + users.size() + ", successful migrated: " + counter);
-        System.out.println("Migration successful");
-        return users;
+        System.out.println(counter + " users migrated");
+        return counter.get();
     }
 
     private void saveUser(User user) throws AlreadyExistsException {
-        ResultSet resultSet;
+        ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
-            String query = "SELECT * FROM " + TABLE + " WHERE name = '" + user.getName() + "' ;";
-            PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(query);
+            preparedStatement = jdbcService.getConnection().prepareStatement(SELECT_QUERY);
+            preparedStatement.setString(1, user.getName());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
                 throw new AlreadyExistsException("Record User with name " + user.getName() + " already exists id database");
             }
-            query = "INSERT INTO " + TABLE + " (id, name, passwordHash, bank, authorityLvl ) VALUES ( '"
-                    + user.getId() + "', '" + user.getName() + "', '" + user.getPasswordHash() + "', '"
-                    + user.getBank() + "', '" + user.getAuthorityLvl() + "' );";
-            preparedStatement.executeUpdate(query);
-            resultSet.close();
-            preparedStatement.close();
+            preparedStatement = jdbcService.getConnection().prepareStatement(INSERT_QUERY);
+            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setString(2, user.getName());
+            preparedStatement.setString(3, user.getPasswordHash());
+            preparedStatement.setInt(4, user.getBank());
+            preparedStatement.setInt(5, user.getAuthorityLvl());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             logger.fatal(e);
             System.exit(1);
+        } finally {
+            try {
+                resultSet.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error(e);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package epam.webtech.model;
+package epam.webtech.services;
 
 import epam.webtech.exceptions.ValidationException;
 
@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface MigrationService<T> {
 
-    List<T> validateAndMigrate(File xmlDataFile) throws ValidationException;
+    int migrate(List<T> data) throws ValidationException;
 }

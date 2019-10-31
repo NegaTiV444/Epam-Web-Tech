@@ -34,6 +34,7 @@ public class XsdValidationService {
             Schema schema = factory.newSchema(xsdFile);
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(xmlFile));
+            logger.debug("File " + xmlFile + " validated successful. Used scheme - " + xsdFile.getName());
         } catch (IOException e) {
             logger.error(e);
             System.out.println("Exception: " + e.getMessage());

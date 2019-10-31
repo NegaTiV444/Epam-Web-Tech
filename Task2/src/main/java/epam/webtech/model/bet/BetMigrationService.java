@@ -1,35 +1,28 @@
 package epam.webtech.model.bet;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.ValidationException;
-import epam.webtech.model.XmlMigrationService;
+import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
-import epam.webtech.services.XsdValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BetMigrationService implements XmlMigrationService<Bet> {
+public class BetMigrationService implements MigrationService<Bet> {
 
-    private static final String XSD_FILE_NAME = "bets.xsd";
     private static final String TABLE = "bets";
+    private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? ;";
+    private static final String INSERT_QUERY = "INSERT INTO " + TABLE
+            + " (id, amount, race_id, horse_name, user_name) VALUES (?, ?, ?, ?, ?)";
 
     private final Logger logger = LogManager.getLogger(BetMigrationService.class);
 
-    private XsdValidationService validationService = XsdValidationService.getInstance();
     private JdbcService jdbcService = JdbcService.getInstance();
-
-    private XmlMapper xmlMapper = new XmlMapper();
 
     private BetMigrationService() {
     }
@@ -43,19 +36,7 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
     }
 
     @Override
-    public List<Bet> validateAndMigrate(File xmlDataFile) throws ValidationException {
-        File xsdFile = new File(XSD_FILE_NAME);
-        validationService.validate(xmlDataFile, xsdFile);
-        System.out.println("Validation successful");
-        List<Bet> bets;
-        try {
-            String xml = inputStreamToString(new FileInputStream(xmlDataFile));
-            bets = xmlMapper.readValue(xml, new TypeReference<List<Bet>>() {
-            });
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            throw new ValidationException("Error " + e.getMessage());
-        }
+    public int migrate(List<Bet> bets) {
         AtomicInteger counter = new AtomicInteger();
         bets.forEach(bet -> {
             try {
@@ -67,28 +48,38 @@ public class BetMigrationService implements XmlMigrationService<Bet> {
             }
         });
         logger.debug("Total bets: " + bets.size() + ", successful migrated: " + counter);
-        System.out.println("Migration successful");
-        return bets;
+        System.out.println(counter + " bets migrated");
+        return counter.get();
     }
 
     private void saveBet(Bet bet) throws AlreadyExistsException {
-        ResultSet resultSet;
+        ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
-            String query = "SELECT * FROM " + TABLE + " WHERE id = '" + bet.getId() + "' ;";
-            PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(query);
+            preparedStatement = jdbcService.getConnection().prepareStatement(SELECT_QUERY);
+            preparedStatement.setInt(1, bet.getRaceId());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
                 throw new AlreadyExistsException("Record Bet with id " + bet.getId() + " already exists id database");
             }
-            query = "INSERT INTO " + TABLE + " (id, amount, race_id, horse_name, user_name ) VALUES ( '"
-                    + bet.getId() + "', '" + bet.getAmount() + "', '" + bet.getRaceId() + "', '"
-                    + bet.getHorseName() + "', '" + bet.getUserName() + "' );";
-            preparedStatement.executeUpdate(query);
-            resultSet.close();
-            preparedStatement.close();
+            preparedStatement = jdbcService.getConnection().prepareStatement(INSERT_QUERY);
+            preparedStatement.setInt(1, bet.getId());
+            preparedStatement.setFloat(2, bet.getAmount());
+            preparedStatement.setInt(3, bet.getRaceId());
+            preparedStatement.setString(4, bet.getHorseName());
+            preparedStatement.setString(5, bet.getUserName());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             logger.fatal(e);
             System.exit(1);
+        } finally {
+            try {
+                resultSet.close();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                logger.error(e);
+            }
+
         }
     }
 }
