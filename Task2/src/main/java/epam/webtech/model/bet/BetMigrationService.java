@@ -57,7 +57,7 @@ public class BetMigrationService implements MigrationService<Bet> {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = jdbcService.getConnection().prepareStatement(SELECT_QUERY);
-            preparedStatement.setInt(1, bet.getRaceId());
+            preparedStatement.setInt(1, bet.getId());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.first()) {
                 throw new AlreadyExistsException("Record Bet with id " + bet.getId() + " already exists id database");
