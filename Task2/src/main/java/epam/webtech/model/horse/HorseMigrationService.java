@@ -19,7 +19,7 @@ public class HorseMigrationService implements MigrationService<Horse> {
 
     private static final String TABLE = "horses";
     private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE name = ? ;";
-    private static final String INSERT_QUERY = "INSERT INTO " + TABLE + " (id, name, winsCounter) VALUES (?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO " + TABLE + " (id, name, wins_counter) VALUES (?, ?, ?)";
 
     private final Logger logger = LogManager.getLogger(HorseMigrationService.class);
 

@@ -17,7 +17,7 @@ public class UserMigrationService implements MigrationService<User> {
     private static final String TABLE = "users";
     private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE name = ? ;";
     private static final String INSERT_QUERY = "INSERT INTO " + TABLE
-            + " (id, name, passwordHash, bank, authorityLvl) VALUES (?, ?, ?, ?, ?)";
+            + " (id, name, password_hash, bank, authority_lvl) VALUES (?, ?, ?, ?, ?)";
 
     private static final Logger logger = LogManager.getLogger(UserMigrationService.class);
 
