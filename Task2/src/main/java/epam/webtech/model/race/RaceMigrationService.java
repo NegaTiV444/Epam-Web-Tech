@@ -16,9 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RaceMigrationService implements MigrationService<Race> {
 
     private static final String TABLE = "races";
+    private static final String LINK_TABLE = "raceHorses";
     private static final String SELECT_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? ;";
     private static final String INSERT_QUERY = "INSERT INTO " + TABLE
-            + " (id, race_date, status, horses_names, winner) VALUES (?, ?, ?, ?, ?)";
+            + " (id, race_date, status, winner) VALUES (?, ?, ?, ?)";
+    private static final String LINK_INSERT_QUERY = "INSERT INTO " + LINK_TABLE + " (race_id, horse_name) VALUES (?, ?)";
 
     private final Logger logger = LogManager.getLogger(RaceMigrationService.class);
     private final JdbcService jdbcService = JdbcService.getInstance();
@@ -61,18 +63,18 @@ public class RaceMigrationService implements MigrationService<Race> {
             if (resultSet.first()) {
                 throw new AlreadyExistsException("Record Race with id " + race.getId() + " already exists id database");
             }
-            StringBuilder horsesString = new StringBuilder();
-            for (String name : race.getHorsesNames())
-                horsesString.append(name + ",");
-            if (horsesString.length() > 1)
-                horsesString.deleteCharAt(horsesString.length() - 1);
             preparedStatement = jdbcService.getConnection().prepareStatement(INSERT_QUERY);
             preparedStatement.setInt(1, race.getId());
             preparedStatement.setString(2, race.getDate().toString());
             preparedStatement.setInt(3, race.getStatus().getPriority());
-            preparedStatement.setString(4, horsesString.toString());
-            preparedStatement.setString(5, race.getWinnerHorseName());
+            preparedStatement.setString(4, race.getWinnerHorseName());
             preparedStatement.executeUpdate();
+            preparedStatement = jdbcService.getConnection().prepareStatement(LINK_INSERT_QUERY);
+            for (String name : race.getHorsesNames()) {
+                preparedStatement.setInt(1, race.getId());
+                preparedStatement.setString(2, name);
+                preparedStatement.executeUpdate();
+            }
         } catch (SQLException e) {
             logger.fatal(e);
             System.exit(1);

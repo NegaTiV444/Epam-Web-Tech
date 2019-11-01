@@ -31,10 +31,10 @@ public class Application {
         logger.debug("Application started");
         try {
             HorseRacingData data = horseRacingMigrationService.loadHorseRacingData(fileService.checkFile(XML_DATA_FILE));
-            horseMigrationService.migrate(data.getHorses());
-            betMigrationService.migrate(data.getBets());
-            raceMigrationService.migrate(data.getRaces());
             userMigrationService.migrate(data.getUsers());
+            horseMigrationService.migrate(data.getHorses());
+            raceMigrationService.migrate(data.getRaces());
+            betMigrationService.migrate(data.getBets());
         } catch (ValidationException e) {
             System.out.println("Migration failed " + e);
             logger.debug(e.getMessage());
