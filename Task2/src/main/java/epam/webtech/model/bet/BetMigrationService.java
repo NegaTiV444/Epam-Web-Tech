@@ -1,6 +1,7 @@
 package epam.webtech.model.bet;
 
 import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.ValidationException;
 import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
@@ -36,9 +37,9 @@ public class BetMigrationService implements MigrationService<Bet> {
     }
 
     @Override
-    public int migrate(List<Bet> bets) {
+    public int migrate(List<Bet> bets) throws DatabaseException {
         AtomicInteger counter = new AtomicInteger();
-        bets.forEach(bet -> {
+        for (Bet bet : bets) {
             try {
                 saveBet(bet);
                 counter.getAndIncrement();
@@ -46,13 +47,13 @@ public class BetMigrationService implements MigrationService<Bet> {
                 System.out.println(e.getMessage());
                 logger.debug(e);
             }
-        });
+        }
         logger.debug("Total bets: " + bets.size() + ", successful migrated: " + counter);
         System.out.println(counter + " bets migrated");
         return counter.get();
     }
 
-    private void saveBet(Bet bet) throws AlreadyExistsException {
+    private void saveBet(Bet bet) throws AlreadyExistsException, DatabaseException {
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -70,12 +71,14 @@ public class BetMigrationService implements MigrationService<Bet> {
             preparedStatement.setString(5, bet.getUserName());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            logger.fatal(e);
-            System.exit(1);
+            logger.error(e);
+            throw new DatabaseException(e.getMessage());
         } finally {
             try {
-                resultSet.close();
-                preparedStatement.close();
+                if (resultSet != null)
+                    resultSet.close();
+                if (preparedStatement != null)
+                    preparedStatement.close();
             } catch (SQLException e) {
                 logger.error(e);
             }

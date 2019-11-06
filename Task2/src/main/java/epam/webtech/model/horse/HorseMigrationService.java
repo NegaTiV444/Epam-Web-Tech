@@ -2,6 +2,7 @@ package epam.webtech.model.horse;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.ValidationException;
 import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
@@ -40,9 +41,9 @@ public class HorseMigrationService implements MigrationService<Horse> {
     }
 
     @Override
-    public int migrate(List<Horse> horses) {
+    public int migrate(List<Horse> horses) throws DatabaseException {
         AtomicInteger counter = new AtomicInteger();
-        horses.forEach(horse -> {
+        for (Horse horse : horses) {
             try {
                 saveHorse(horse);
                 counter.getAndIncrement();
@@ -50,13 +51,13 @@ public class HorseMigrationService implements MigrationService<Horse> {
                 logger.debug(e);
                 System.out.println(e.getMessage());
             }
-        });
+        }
         logger.debug("Total horses: " + horses.size() + ", successful migrated: " + counter);
         System.out.println(counter + " horses migrated");
         return counter.get();
     }
 
-    private void saveHorse(Horse horse) throws AlreadyExistsException {
+    private void saveHorse(Horse horse) throws AlreadyExistsException, DatabaseException {
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -73,12 +74,14 @@ public class HorseMigrationService implements MigrationService<Horse> {
             preparedStatement.setInt(3, horse.getWinsCounter());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            logger.fatal(e);
-            System.exit(1);
+            logger.error(e);
+            throw new DatabaseException(e.getMessage());
         } finally {
             try {
-                resultSet.close();
-                preparedStatement.close();
+                if (resultSet != null)
+                    resultSet.close();
+                if (preparedStatement != null)
+                    preparedStatement.close();
             } catch (SQLException e) {
                 logger.error(e);
             }

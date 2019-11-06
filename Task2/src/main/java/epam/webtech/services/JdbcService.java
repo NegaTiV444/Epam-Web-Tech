@@ -1,30 +1,34 @@
 package epam.webtech.services;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import epam.webtech.exceptions.DatabaseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class JdbcService {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/epam?serverTimezone=UTC";
-    private static final String USER = "root";
-    private static final String PASSWORD = "123321";
 
     private final Logger logger = LogManager.getLogger(JdbcService.class);
 
     private Connection connection;
+    private boolean isInited = false;
 
     private JdbcService() {
+    }
+
+    public void init(String url, String user, String password) throws DatabaseException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            logger.debug("Connection to " + URL + " successful");
+            connection = DriverManager.getConnection(url, user, password);
+            logger.debug("Connection to " + url + " successful");
+            isInited = true;
         } catch (ClassNotFoundException | SQLException e) {
-            logger.fatal("Connection to " + URL + " failed");
-            logger.fatal(e);
-            System.exit(652);
+            logger.error("Connection to " + url + " failed " + e);
+            isInited = false;
+            throw new DatabaseException(e.getMessage());
         }
     }
 
@@ -36,8 +40,11 @@ public class JdbcService {
         return JdbcService.SingletonHandler.INSTANCE;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Connection getConnection() throws DatabaseException {
+        if (isInited)
+            return connection;
+        else
+            throw new DatabaseException("JdbcService not initialized");
     }
 
 

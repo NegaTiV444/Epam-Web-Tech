@@ -1,6 +1,7 @@
 package epam.webtech.model.race;
 
 import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.ValidationException;
 import epam.webtech.services.MigrationService;
 import epam.webtech.services.JdbcService;
@@ -37,9 +38,9 @@ public class RaceMigrationService implements MigrationService<Race> {
     }
 
     @Override
-    public int migrate(List<Race> races) {
+    public int migrate(List<Race> races) throws DatabaseException {
         AtomicInteger counter = new AtomicInteger();
-        races.forEach(race -> {
+        for (Race race : races) {
             try {
                 saveRace(race);
                 counter.getAndIncrement();
@@ -47,13 +48,13 @@ public class RaceMigrationService implements MigrationService<Race> {
                 logger.debug(e);
                 System.out.println(e.getMessage());
             }
-        });
+        }
         logger.debug("Total races: " + races.size() + ", successful migrated: " + counter);
         System.out.println(counter + " races migrated");
         return counter.get();
     }
 
-    private void saveRace(Race race) throws AlreadyExistsException {
+    private void saveRace(Race race) throws AlreadyExistsException, DatabaseException {
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -76,12 +77,14 @@ public class RaceMigrationService implements MigrationService<Race> {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            logger.fatal(e);
-            System.exit(1);
+            logger.error(e);
+            throw new DatabaseException(e.getMessage());
         } finally {
             try {
-                resultSet.close();
-                preparedStatement.close();
+                if (resultSet != null)
+                    resultSet.close();
+                if (preparedStatement != null)
+                    preparedStatement.close();
             } catch (SQLException e) {
                 logger.error(e);
             }
