@@ -72,7 +72,7 @@ public class Application {
         System.out.println(output);
     }
 
-    public static void printRace(Race race) {
+    private static void printRace(Race race) {
         StringBuilder output = new StringBuilder();
         output.append("    Race:\n        ID: ");
         output.append(race.getId());
@@ -92,7 +92,7 @@ public class Application {
         System.out.println(output.toString());
     }
 
-    public static void printBet(Bet bet) {
+    private static void printBet(Bet bet) {
         String output = "    Bet:\n        Race id: " +
                 bet.getRaceId()  +
                 "\n        User: " +
