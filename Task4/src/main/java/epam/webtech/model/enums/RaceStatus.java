@@ -1,5 +1,7 @@
 package epam.webtech.model.enums;
 
+import epam.webtech.exceptions.NotFoundException;
+
 public enum RaceStatus {
 
     WAITING(1),
@@ -16,4 +18,17 @@ public enum RaceStatus {
         this.priority = priority;
     }
 
+    public static RaceStatus getByPriority(int priority) throws NotFoundException {
+        switch (priority) {
+            case 0:
+                return IN_PROGRESS;
+            case 1:
+                return WAITING;
+            case 2:
+                return FINISHED;
+            default:
+                throw new NotFoundException("RaceStatus with priority " + priority + " not found");
+        }
+
+    }
 }

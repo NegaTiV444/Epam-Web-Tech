@@ -6,6 +6,7 @@ import epam.webtech.model.horse.Horse;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Race extends Entity implements Comparable<Race> {
@@ -20,7 +21,7 @@ public class Race extends Entity implements Comparable<Race> {
 
     private Date date;
     private RaceStatus status;
-    private Horse[] horses;
-    private String winnerHorseName;
+    private List<Horse> horses;
+    private Horse winnerHorse;
 
 }
