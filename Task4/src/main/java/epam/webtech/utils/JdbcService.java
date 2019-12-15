@@ -16,23 +16,21 @@ public class JdbcService {
     private String dbUser;
     private String dbPassword;
 
-    private static boolean isInitiated;
+    private static boolean isInitialized = false;
 
-    public void init() throws DatabaseException {
-        try (InputStream input = new FileInputStream("src/main/resources/conf.properties")) {
+    private void init() throws DatabaseException {
+        try (InputStream input = new FileInputStream("conf/conf.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             dbUrl = prop.getProperty("db.url");
             dbUser = prop.getProperty("db.user");
             dbPassword = prop.getProperty("db.password");
             Class.forName("com.mysql.cj.jdbc.Driver");
-            isInitiated = true;
+            isInitialized = true;
         } catch (ClassNotFoundException e) {
-            isInitiated = false;
-            throw new DatabaseException("Failed to load MySQL JDBC Driver");
+            throw new DatabaseException("Failed to initialize JdbcService. MySQL JDBC Driver is unavailable.");
         } catch (IOException e) {
-            isInitiated = false;
-            throw new DatabaseException("Failed to load configuration file");
+            throw new DatabaseException("Failed to initialize JdbcService. Configuration file is unavailable.");
         }
     }
 
@@ -44,7 +42,7 @@ public class JdbcService {
     }
 
     public Connection getConnection() throws DatabaseException {
-        if (!isInitiated) {
+        if (!isInitialized) {
             JdbcService.SingletonHandler.INSTANCE.init();
         }
         try {
