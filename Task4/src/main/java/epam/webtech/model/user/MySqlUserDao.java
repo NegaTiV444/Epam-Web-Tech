@@ -7,6 +7,7 @@ import epam.webtech.utils.JdbcService;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,8 +37,6 @@ public class MySqlUserDao implements UserDao {
             }
         } catch (SQLException e) {
             throw new DatabaseException("Database error");
-        } catch (DatabaseException e) {
-            throw e;
         }
         return user;
     }
@@ -56,15 +55,13 @@ public class MySqlUserDao implements UserDao {
             }
         } catch (SQLException e) {
             throw new DatabaseException("Database error");
-        } catch (DatabaseException e) {
-            throw e;
         }
         return user;
     }
 
     @Override
     public List<User> findAll() throws DatabaseException {
-        List<User> users = new LinkedList<>(); //TODO check (Maybe ArrayList is better here)
+        List<User> users = new ArrayList<>();
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_ALL_QUERY)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -97,7 +94,7 @@ public class MySqlUserDao implements UserDao {
     @Override
     public void delete(User user) throws DatabaseException, NotFoundException {
         findById(user.getId());
-        try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(UPDATE_QUERY)) {
+        try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(DELETE_QUERY)) {
             preparedStatement.setInt(1, user.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
