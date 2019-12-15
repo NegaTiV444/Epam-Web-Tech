@@ -37,7 +37,7 @@ public class JdbcService {
     private JdbcService() {
     }
 
-    public static JdbcService getInstance() throws DatabaseException {
+    public static JdbcService getInstance() {
         return JdbcService.SingletonHandler.INSTANCE;
     }
 
