@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class Bet extends Entity implements Comparable<Bet> {
 
-    private float amount;
+    private int amount;
     private Race race;
     private Horse horse;
     private User user;
