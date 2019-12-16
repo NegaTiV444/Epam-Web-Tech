@@ -27,18 +27,15 @@ public class UserProfilePageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Integer authorityLvl = (Integer) req.getSession().getAttribute("authorityLvl");
         Integer currentUserId = (Integer) req.getSession().getAttribute("currentUserId");
-        if ((null != authorityLvl) && (0 != authorityLvl) && (null != currentUserId)) {
+        if ((0 != authorityLvl) && (null != currentUserId)) {
             try {
                 User user = userDao.findById(currentUserId);
                 req.setAttribute("user", user);
                 req.setAttribute("bets", betDao.findByUser(user));
                 req.getRequestDispatcher("/WEB-INF/pages/userProfilePage.jsp").forward(req, resp);
-            } catch (DatabaseException e) {
-                e.printStackTrace();
-            } catch (NotFoundException e) {
-                e.printStackTrace();
+            } catch (DatabaseException | NotFoundException e) {
+                throw new InternalException(e.getMessage());
             }
-
         } else {
             resp.sendRedirect("login");
         }
@@ -57,8 +54,6 @@ public class UserProfilePageServlet extends HttpServlet {
             req.getSession().setAttribute("authorityLvl", user.getAuthorityLvl());
             resp.sendRedirect("profile");
         } catch (AuthorisationException e) {
-            resp.sendRedirect("login?errorMsg=" + e.getMessage());
-        } catch (InternalException e) {
             resp.sendRedirect("login?errorMsg=" + e.getMessage());
         }
     }

@@ -1,6 +1,8 @@
 package epam.webtech.exceptions;
 
-public class InternalException extends Exception {
+import javax.servlet.ServletException;
+
+public class InternalException extends ServletException {
 
     public InternalException(String message) {
         super(message);

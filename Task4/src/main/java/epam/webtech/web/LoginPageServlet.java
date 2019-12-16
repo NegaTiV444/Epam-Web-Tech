@@ -1,7 +1,11 @@
 package epam.webtech.web;
 
 import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.InternalException;
+import epam.webtech.model.horse.Horse;
+import epam.webtech.model.horse.HorseDao;
+import epam.webtech.model.horse.MySqlHorseDao;
 import epam.webtech.model.user.User;
 import epam.webtech.utils.UserService;
 
@@ -31,8 +35,8 @@ public class LoginPageServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = (String) req.getParameter("name");
-        String password = (String) req.getParameter("password");
+        String name = req.getParameter("name");
+        String password = req.getParameter("password");
         User user;
         try {
             user = userService.registerUser(name, password);
@@ -40,8 +44,6 @@ public class LoginPageServlet extends HttpServlet {
             req.getSession().setAttribute("authorityLvl", user.getAuthorityLvl());
             resp.sendRedirect("profile");
         } catch (AlreadyExistsException e) {
-            resp.sendRedirect("login?errorMsg=" + e.getMessage());
-        } catch (InternalException e) {
             resp.sendRedirect("login?errorMsg=" + e.getMessage());
         }
     }

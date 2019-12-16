@@ -23,7 +23,6 @@ public class MySqlHorseDao implements HorseDao {
             + "(horse_name, horse_wins_counter) VALUES (?, ?)";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE horse_id = ? ;";
     private static final String FIND_BY_NAME_QUERY = "SELECT * FROM " + TABLE + " WHERE horse_name = ? ;";
-    private static final String FIND_BY_HORSE_QUERY = "SELECT * FROM " + TABLE + " WHERE horse_name = ? ;";
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE horse_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE " + TABLE

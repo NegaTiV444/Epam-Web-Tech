@@ -48,13 +48,27 @@
         <url-pattern>/races/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>addRace</servlet-name>
+        <servlet-class>epam.webtech.web.AddRacePageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>addRace</servlet-name>
+        <url-pattern>/addrace</url-pattern>
+    </servlet-mapping>
+
     <filter>
         <filter-name>defaultFilter</filter-name>
         <filter-class>epam.webtech.web.filters.DefaultFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>defaultFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <error-page>
+        <exception-type>epam.webtech.exceptions.InternalException</exception-type>
+        <location>/WEB-INF/pages/internalErrorPage.jsp</location>
+    </error-page>
+
 </web-app>
