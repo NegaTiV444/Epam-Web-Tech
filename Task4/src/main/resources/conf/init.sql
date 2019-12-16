@@ -22,8 +22,7 @@ CREATE TABLE IF NOT EXISTS
     race_id        INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     race_date      BIGINT,
     race_status    INT,
-    race_winner    VARCHAR(32),
-    FOREIGN KEY (race_winner) REFERENCES horses (horse_name)
+    race_winner    VARCHAR(32)
 );
 CREATE TABLE IF NOT EXISTS
     racehorses

@@ -21,7 +21,7 @@ public class MySqlRaceDao implements RaceDao {
     private static final String ADD_QUERY = "INSERT INTO " + TABLE
             + "(race_date, race_status, race_winner) VALUES (?, ?, ?);";
     private static final String ADD_HORSES_QUERY = "INSERT INTO " + LINK_TABLE
-            + "(racehorses_race_id, racehorses_race_id) VALUES (?, ?)";
+            + "(racehorse_race_id, racehorse_horse_id) VALUES (?, ?)";
     private static final String LINK_QUERY = "SELECT * FROM " + LINK_TABLE + " WHERE racehorse_horse_id = ?;";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE race_id = ? ;";
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
@@ -57,7 +57,7 @@ public class MySqlRaceDao implements RaceDao {
                     .prepareStatement(ADD_QUERY, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setLong(1, race.getDate().getTime());
                 preparedStatement.setInt(2, race.getStatus().getPriority());
-                preparedStatement.setString(3, race.getWinnerHorse().getName());
+                preparedStatement.setString(3, "");
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows == 0) {
                     throw new DatabaseException("Creating race failed, no rows affected.");
@@ -108,10 +108,12 @@ public class MySqlRaceDao implements RaceDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_ALL_QUERY)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    races.add(getRaceFromResultSet(resultSet));
+                    Race race = getRaceFromResultSet(resultSet);
+                    race.setHorses(horseDao.findByRace(race));
+                    races.add(race);
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NotFoundException e) {
             throw new DatabaseException("Database error");
         } catch (DatabaseException e) {
             throw e;

@@ -5,6 +5,7 @@ import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Race extends Entity implements Comparable<Race> {
 
     private Date date;
     private RaceStatus status;
-    private List<Horse> horses;
+    private List<Horse> horses = new ArrayList<>();
     private Horse winnerHorse;
 
 }

@@ -14,7 +14,7 @@
 <jsp:include page="header.jsp"/>
 <main>
     <form class="add-race" method="post" action="<c:url value="/races/add"/>">
-        <input type="date" name="race_date item">
+        <input type="date" name="race_date">
         <h3>Choose horses</h3>
         <div class="column">
             <c:forEach var="horse" items="${horses}">
