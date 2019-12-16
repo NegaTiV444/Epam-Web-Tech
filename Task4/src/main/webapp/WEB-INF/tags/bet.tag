@@ -10,7 +10,6 @@
         <span>RACE STATUS: ${bet.race.status}</span>
     </div>
     <div>
-        <h2 class="race-action">Your bet</h2>
         <span>Horse: ${bet.horse.name} - ${bet.amount}</span>
     </div>
     <c:choose>

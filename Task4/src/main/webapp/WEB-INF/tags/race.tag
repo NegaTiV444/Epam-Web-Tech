@@ -26,7 +26,7 @@
             <c:choose>
                 <c:when test="${authorityLvl eq 2}">
                     <div>
-                        <form action="<c:url value="/races/finish"/>" method="post">
+                        <form action="<c:url value="/races/finish?raceid=${race.id}"/>" method="post">
                             <select id="winnerHorse" name="winnerHorse">
                                 <c:forEach var="horse" items="${race.horses}">
                                     <option>${horse.name}</option>

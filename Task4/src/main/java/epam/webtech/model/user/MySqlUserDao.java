@@ -22,7 +22,7 @@ public class MySqlUserDao implements UserDao {
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE user_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
-            + "SET user_name = ?, user_password_hash = ?, user_bank = ?, user_authority_lvl = ? WHERE user_id = ?";
+            + " SET user_name = ?, user_password_hash = ?, user_bank = ?, user_authority_lvl = ? WHERE user_id = ?";
 
     private JdbcService jdbcService = JdbcService.getInstance();
 

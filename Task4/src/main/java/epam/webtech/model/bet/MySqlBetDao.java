@@ -170,7 +170,7 @@ public class MySqlBetDao implements BetDao{
 
     private Bet getBetFromResultSet(ResultSet resultSet) throws SQLException, DatabaseException, NotFoundException {
         Bet bet = new Bet();
-        bet.setId(resultSet.getInt("id"));
+        bet.setId(resultSet.getInt("bet_id"));
         bet.setAmount(resultSet.getInt("bet_amount"));
         bet.setUser(userDao.findById(resultSet.getInt("bet_user_id")));
         bet.setRace(raceDao.findById(resultSet.getInt("bet_race_id")));
