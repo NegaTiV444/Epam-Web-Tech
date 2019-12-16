@@ -37,10 +37,6 @@ public class JdbcService {
     private JdbcService() {
     }
 
-    public static JdbcService getInstance() {
-        return JdbcService.SingletonHandler.INSTANCE;
-    }
-
     public Connection getConnection() throws DatabaseException {
         if (!isInitialized) {
             JdbcService.SingletonHandler.INSTANCE.init();
@@ -50,6 +46,10 @@ public class JdbcService {
         } catch (SQLException e) {
             throw new DatabaseException("Failed to establish database connection.");
         }
+    }
+
+    public static JdbcService getInstance() {
+        return JdbcService.SingletonHandler.INSTANCE;
     }
 
     private static class SingletonHandler {
