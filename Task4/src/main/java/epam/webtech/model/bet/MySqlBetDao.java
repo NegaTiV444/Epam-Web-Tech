@@ -126,7 +126,7 @@ public class MySqlBetDao implements BetDao{
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_ID_QUERY)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     bet = getBetFromResultSet(resultSet);
                 } else {
                     throw new NotFoundException("Bet with id " + id + " not found");

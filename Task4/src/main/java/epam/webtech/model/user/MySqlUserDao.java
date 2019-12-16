@@ -69,7 +69,7 @@ public class MySqlUserDao implements UserDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_ID_QUERY)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     user = getUserFromResultSet(resultSet);
                 } else {
                     throw new NotFoundException("User with id " + id + " not found");
@@ -87,7 +87,7 @@ public class MySqlUserDao implements UserDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_NAME_QUERY)) {
             preparedStatement.setString(1, name);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     user = getUserFromResultSet(resultSet);
                 } else {
                     throw new NotFoundException("User with name " + name + " not found");

@@ -1,12 +1,14 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- Header -->
-<header class="row">
-    <h1>10XBET</h1>
+<header class="row-between">
+    <a href="${pageContext.servletContext.contextPath}/races">
+        <h1>10XBET</h1>
+    </a>
     <div>
         <div>
             <a href="${pageContext.servletContext.contextPath}/profile">
-                <img class="icon" src="${pageContext.servletContext.contextPath}/WEB-INF/images/user_icon.png">
+                <img class="icon" src="${pageContext.servletContext.contextPath}/images/user_icon.png">
             </a>
         </div>
     </div>

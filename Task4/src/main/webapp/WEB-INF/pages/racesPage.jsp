@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>Races</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/WEB-INF/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/styles/style.css">
 </head>
 <body>
 <jsp:include page="header.jsp"/>

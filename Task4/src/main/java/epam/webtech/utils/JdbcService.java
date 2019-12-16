@@ -2,6 +2,7 @@ package epam.webtech.utils;
 
 import epam.webtech.exceptions.DatabaseException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public class JdbcService {
     private static boolean isInitialized = false;
 
     private void init() throws DatabaseException {
-        try (InputStream input = new FileInputStream("conf/conf.properties")) {
+        try (InputStream input = new FileInputStream("src/main/resources/conf/conf.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             dbUrl = prop.getProperty("db.url");

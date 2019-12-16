@@ -1,5 +1,10 @@
 package epam.webtech.web;
 
+import epam.webtech.exceptions.AlreadyExistsException;
+import epam.webtech.exceptions.InternalException;
+import epam.webtech.model.user.User;
+import epam.webtech.utils.UserService;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -8,9 +13,17 @@ import java.io.IOException;
 
 public class LoginPageServlet extends HttpServlet {
 
+    private UserService userService = UserService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        Integer authorityLvl = (Integer) req.getSession().getAttribute("authorityLvl");
+        if (0 != authorityLvl) {
+            resp.sendRedirect("profile");
+        } else {
+            req.getRequestDispatcher("/WEB-INF/pages/loginPage.jsp").forward(req, resp);
+        }
+
     }
 
     /*
@@ -18,6 +31,18 @@ public class LoginPageServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        String name = (String) req.getParameter("name");
+        String password = (String) req.getParameter("password");
+        User user;
+        try {
+            user = userService.registerUser(name, password);
+            req.getSession().setAttribute("currentUserId", user.getId());
+            req.getSession().setAttribute("authorityLvl", user.getAuthorityLvl());
+            resp.sendRedirect("profile");
+        } catch (AlreadyExistsException e) {
+            resp.sendRedirect("login?errorMsg=" + e.getMessage());
+        } catch (InternalException e) {
+            resp.sendRedirect("login?errorMsg=" + e.getMessage());
+        }
     }
 }

@@ -89,7 +89,7 @@ public class MySqlRaceDao implements RaceDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_ID_QUERY)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     race = getRaceFromResultSet(resultSet);
                     race.setHorses(horseDao.findByRace(race));
                 } else {

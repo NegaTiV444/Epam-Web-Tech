@@ -45,7 +45,7 @@ public class MySqlHorseDao implements HorseDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_NAME_QUERY)) {
             preparedStatement.setString(1, name);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     horse = getHorseFromResultSet(resultSet);
                 } else {
                     throw new NotFoundException("Horse with name " + name + " not found");
@@ -105,7 +105,7 @@ public class MySqlHorseDao implements HorseDao {
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(FIND_BY_ID_QUERY)) {
             preparedStatement.setInt(1, id);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.isFirst()) {
+                if (resultSet.first()) {
                     horse = getHorseFromResultSet(resultSet);
                 } else {
                     throw new NotFoundException("Horse with id " + id + " not found");

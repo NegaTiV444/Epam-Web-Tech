@@ -5,54 +5,60 @@
 <html>
 <head>
     <title>Login/Register</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/WEB-INF/styles/style.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/styles/style.css">
 </head>
 <body>
 <jsp:include page="header.jsp"/>
 <main>
-    <form id="loginForm" method="POST" action="">
+    <h2>Login</h2>
+    <form id="loginForm" method="POST" action="<c:url value="/profile"/>">
         <section class="loginSection">
             <c:if test="${not empty param.errorMsg}">
-                <c:choose>
-                    <c:when test="${param.errorMsg == 'wrong.name.error'}">
-                        <p style="color:red">User with such name doesn't exist</p>
-                    </c:when>
-                    <c:when test="${param.errorMsg == 'wrong.password.error'}">
-                        <p style="color:red">Wrong password</p>
-                    </c:when>
-                    <c:when test="${param.errorMsg == 'wrong.user.error'}">
-                        <p style="color:red">User with such name already exists</p>
-                    </c:when>
-                </c:choose>
+                <p style="color:red">${param.errorMsg}</p>
             </c:if>
             <div class="element">
-                <input type="email" name="email" placeholder="E-mail" required>
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Name" required>
             </div>
             <div class="element">
+                <label>Password</label>
                 <input type="password" name="password" placeholder="Password" required>
             </div>
+            <input type="submit" value="submit">
+        </section>
+    </form>
+    <h2>Registration</h2>
+    <form id="registerForm" method="POST" action="<c:url value="/login"/>">
+        <section class="loginSection">
+            <c:if test="${not empty param.errorMsg}">
+                <p style="color:red">${param.errorMsg}</p>
+            </c:if>
             <div class="element">
-                <input class="loginButton" type="button" name="login" value="Log in"
-                       onclick="loginBtnClick()">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Name" required>
             </div>
             <div class="element">
-                <input class="registerButton" type="button" name="login" value="Sign up"
-                       onclick="loginBtnClick()">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Password" required>
             </div>
-            <script type="text/javascript">
-                function loginBtnClick() {
-                    document.getElementById("loginForm").action = <c:url value="/profile"/>
-                        document.getElementById("loginForm").submit()
-                }
-
-                function registerBtnClick() {
-                    document.getElementById("loginForm").action = <c:url value="/login"/>
-                        document.getElementById("loginForm").submit()
-                }
-            </script>
+            <input type="submit" value="submit">
         </section>
     </form>
 </main>
 <jsp:include page="footer.jsp"/>
 </body>
+<script type="text/javascript">
+
+    function loginBtnClick() {
+        alert("log");
+        document.getElementById("loginForm").action = <c:url value="/profile"/>
+        document.getElementById("loginForm").submit()
+    }
+
+    function registerBtnClick() {
+        alert("reg");
+        document.getElementById("loginForm").action = <c:url value="/login"/>
+        document.getElementById("loginForm").submit()
+    }
+</script>
 </html>

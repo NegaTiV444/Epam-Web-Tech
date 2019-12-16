@@ -15,7 +15,7 @@ public class HashService {
     private MessageDigest messageDigest = null;
 
     private void init() throws HashServiceException {
-        try (InputStream input = new FileInputStream("conf/conf.properties")) {
+        try (InputStream input = new FileInputStream("src/main/resources/conf/conf.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             messageDigest = MessageDigest.getInstance(prop.getProperty("hash.algorithm"));
