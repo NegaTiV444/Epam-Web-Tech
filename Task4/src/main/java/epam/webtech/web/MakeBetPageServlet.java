@@ -20,6 +20,8 @@ import java.io.IOException;
 
 public class MakeBetPageServlet extends HttpServlet {
 
+    //private final Logger logger = LogManager.getLogger();
+
     private RaceDao raceDao = MySqlRaceDao.getInstance();
     private BetService betService = BetService.getInstance();
     private UserDao userDao = MySqlUserDao.getInstance();
@@ -40,6 +42,7 @@ public class MakeBetPageServlet extends HttpServlet {
                 req.setAttribute("errorMessage", "Race with id " + raceId + " not found");
                 req.getRequestDispatcher("/WEB-INF/pages/notFoundErrorPage.jsp").forward(req, resp);
             } catch (DatabaseException e) {
+               // logger.error(e);
                 throw new InternalException("Database error");
             }
         } else {
@@ -74,6 +77,7 @@ public class MakeBetPageServlet extends HttpServlet {
             req.setAttribute("errorMessage", e.getMessage());
             req.getRequestDispatcher("/WEB-INF/pages/notFoundErrorPage.jsp").forward(req, resp);
         } catch (DatabaseException | NullPointerException | AlreadyExistsException e) {
+           // logger.error(e);
             throw new InternalException("Internal error");
         } catch (NotEnoughMoneyException e) {
             resp.sendRedirect("makebet?errorMessage=Not enough money&raceid=" + raceId);

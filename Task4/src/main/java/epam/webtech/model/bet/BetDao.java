@@ -12,6 +12,8 @@ import java.util.List;
 public interface BetDao extends Dao<Bet> {
 
     List<Bet> findByUser(User user) throws DatabaseException, NotFoundException;
+
     List<Bet> findByRace(Race race) throws DatabaseException, NotFoundException;
+
     List<Bet> findByHorse(Horse horse) throws DatabaseException, NotFoundException;
 }

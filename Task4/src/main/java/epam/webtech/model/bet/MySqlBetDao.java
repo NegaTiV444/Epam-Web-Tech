@@ -21,7 +21,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySqlBetDao implements BetDao{
+public class MySqlBetDao implements BetDao {
 
     private static final String TABLE = "bets";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE bet_id = ? ;";
@@ -32,6 +32,8 @@ public class MySqlBetDao implements BetDao{
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String ADD_QUERY = "INSERT INTO " + TABLE
             + " (bet_amount, bet_race_id, bet_horse_id, bet_user_id) VALUES (?, ?, ?, ?)";
+
+  //  private final Logger logger = LogManager.getLogger();
 
     private JdbcService jdbcService = epam.webtech.utils.JdbcService.getInstance();
     private UserDao userDao = MySqlUserDao.getInstance();
@@ -56,6 +58,7 @@ public class MySqlBetDao implements BetDao{
                     bets.add(getBetFromResultSet(resultSet));
             }
         } catch (SQLException e) {
+    //        logger.error(e);
             throw new DatabaseException("Database error");
         }
         return bets;
@@ -71,6 +74,7 @@ public class MySqlBetDao implements BetDao{
                     bets.add(getBetFromResultSet(resultSet));
             }
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         }
         return bets;
@@ -86,6 +90,7 @@ public class MySqlBetDao implements BetDao{
                     bets.add(getBetFromResultSet(resultSet));
             }
         } catch (SQLException e) {
+      //      logger.error(e);
             throw new DatabaseException("Database error");
         }
         return bets;
@@ -115,6 +120,7 @@ public class MySqlBetDao implements BetDao{
                     }
                 }
             } catch (SQLException ex) {
+       //         logger.error(ex);
                 throw new DatabaseException("Database error");
             }
         }
@@ -133,6 +139,7 @@ public class MySqlBetDao implements BetDao{
                 }
             }
         } catch (SQLException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         }
         return bet;
@@ -147,6 +154,7 @@ public class MySqlBetDao implements BetDao{
                     bets.add(getBetFromResultSet(resultSet));
             }
         } catch (SQLException e) {
+      //      logger.error(e);
             throw new DatabaseException("Database error");
         }
         return bets;
@@ -164,6 +172,7 @@ public class MySqlBetDao implements BetDao{
             preparedStatement.setInt(1, bet.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         }
     }

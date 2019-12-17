@@ -1,11 +1,6 @@
 package epam.webtech.web;
 
 import epam.webtech.exceptions.AlreadyExistsException;
-import epam.webtech.exceptions.DatabaseException;
-import epam.webtech.exceptions.InternalException;
-import epam.webtech.model.horse.Horse;
-import epam.webtech.model.horse.HorseDao;
-import epam.webtech.model.horse.MySqlHorseDao;
 import epam.webtech.model.user.User;
 import epam.webtech.utils.UserService;
 
@@ -16,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class LoginPageServlet extends HttpServlet {
+
+    //private final Logger logger = LogManager.getLogger();
 
     private UserService userService = UserService.getInstance();
 

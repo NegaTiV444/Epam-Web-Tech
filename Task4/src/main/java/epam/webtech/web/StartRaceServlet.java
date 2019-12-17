@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class StartRaceServlet extends HttpServlet {
+
+   // private final Logger logger = LogManager.getLogger();
+
     private RaceDao raceDao = MySqlRaceDao.getInstance();
 
     @Override
@@ -27,6 +30,7 @@ public class StartRaceServlet extends HttpServlet {
             raceDao.update(race);
             resp.sendRedirect("../races");
         } catch (NumberFormatException | DatabaseException | NotFoundException e) {
+           // logger.error(e);
             throw new InternalException("Internal error " + e.getMessage());
         }
     }

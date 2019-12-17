@@ -1,10 +1,8 @@
 package epam.webtech.web;
 
-import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.InternalException;
 import epam.webtech.exceptions.NotFoundException;
-import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
 import epam.webtech.model.horse.HorseDao;
 import epam.webtech.model.horse.MySqlHorseDao;
@@ -22,6 +20,8 @@ import java.util.List;
 
 public class MainPageServlet extends HttpServlet {
 
+    //private final Logger logger = LogManager.getLogger();
+
     private RaceDao raceDao = MySqlRaceDao.getInstance();
     private HorseDao horseDao = MySqlHorseDao.getInstance();
     private BetService betService = BetService.getInstance();
@@ -32,6 +32,7 @@ public class MainPageServlet extends HttpServlet {
             List<Race> races = raceDao.findAll();
             req.setAttribute("races", races);
         } catch (DatabaseException | NotFoundException e) {
+          //  logger.error(e);
             throw new InternalException("Internal error: " + e.getMessage());
         }
         req.getRequestDispatcher("/WEB-INF/pages/racesPage.jsp").forward(req, resp);
@@ -53,6 +54,7 @@ public class MainPageServlet extends HttpServlet {
             betService.finishRace(race);
             resp.sendRedirect("../races");
         } catch (NumberFormatException | DatabaseException | NotFoundException e) {
+            //logger.error(e);
             throw new InternalException("Internal error " + e.getMessage());
         }
     }

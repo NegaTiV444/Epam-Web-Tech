@@ -4,7 +4,6 @@ import epam.webtech.exceptions.AlreadyExistsException;
 import epam.webtech.exceptions.DatabaseException;
 import epam.webtech.exceptions.NotFoundException;
 import epam.webtech.model.race.Race;
-import epam.webtech.model.user.MySqlUserDao;
 import epam.webtech.utils.JdbcService;
 
 import java.sql.PreparedStatement;
@@ -27,6 +26,8 @@ public class MySqlHorseDao implements HorseDao {
     private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE horse_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
             + " SET horse_name = ?, horse_wins_counter = ? WHERE horse_id = ?";
+
+  //  private final Logger logger = LogManager.getLogger();
 
     private JdbcService jdbcService = epam.webtech.utils.JdbcService.getInstance();
 
@@ -51,6 +52,7 @@ public class MySqlHorseDao implements HorseDao {
                 }
             }
         } catch (SQLException e) {
+    //        logger.error(e);
             throw new DatabaseException("Database error");
         }
         return horse;
@@ -66,6 +68,7 @@ public class MySqlHorseDao implements HorseDao {
                 horses.add(findById(resultSet.getInt("racehorse_horse_id")));
             }
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         }
         return horses;
@@ -93,6 +96,7 @@ public class MySqlHorseDao implements HorseDao {
                     }
                 }
             } catch (SQLException ex) {
+        //        logger.error(ex);
                 throw new DatabaseException("Database error");
             }
         }
@@ -111,6 +115,7 @@ public class MySqlHorseDao implements HorseDao {
                 }
             }
         } catch (SQLException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         }
         return horse;
@@ -126,8 +131,10 @@ public class MySqlHorseDao implements HorseDao {
                 }
             }
         } catch (SQLException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         } catch (DatabaseException e) {
+        //    logger.error(e);
             throw e;
         }
         return horses;
@@ -142,6 +149,7 @@ public class MySqlHorseDao implements HorseDao {
             preparedStatement.setInt(3, horse.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         }
     }

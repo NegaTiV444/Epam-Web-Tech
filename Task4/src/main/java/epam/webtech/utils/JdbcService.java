@@ -2,7 +2,6 @@ package epam.webtech.utils;
 
 import epam.webtech.exceptions.DatabaseException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +18,8 @@ public class JdbcService {
 
     private static boolean isInitialized = false;
 
+   // private final Logger logger = LogManager.getLogger();
+
     private void init() throws DatabaseException {
         try (InputStream input = new FileInputStream("src/main/resources/conf/conf.properties")) {
             Properties prop = new Properties();
@@ -29,8 +30,10 @@ public class JdbcService {
             Class.forName("com.mysql.cj.jdbc.Driver");
             isInitialized = true;
         } catch (ClassNotFoundException e) {
+    //        logger.error(e);
             throw new DatabaseException("Failed to initialize JdbcService. MySQL JDBC Driver is unavailable.");
         } catch (IOException e) {
+     //       logger.error(e);
             throw new DatabaseException("Failed to initialize JdbcService. Configuration file is unavailable.");
         }
     }
@@ -45,6 +48,7 @@ public class JdbcService {
         try {
             return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         } catch (SQLException e) {
+        //    logger.error(e);
             throw new DatabaseException("Failed to establish database connection.");
         }
     }

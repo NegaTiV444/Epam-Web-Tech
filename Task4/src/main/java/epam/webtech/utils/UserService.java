@@ -7,6 +7,8 @@ import epam.webtech.model.user.UserDao;
 
 public class UserService {
 
+   // private final Logger logger = LogManager.getLogger();
+
     private HashService hashService = HashService.getInstance();
     private UserDao userDao = MySqlUserDao.getInstance();
 
@@ -20,6 +22,7 @@ public class UserService {
             userDao.add(user);
             return user;
         } catch (HashServiceException | DatabaseException e) {
+     //       logger.error(e);
             throw new InternalException(e.getMessage());
         }
     }
@@ -34,6 +37,7 @@ public class UserService {
         } catch (NotFoundException e) {
             throw new AuthorisationException("User " + name + " doesn't exist.");
         } catch (DatabaseException | HashServiceException e) {
+      //      logger.error(e);
             throw new InternalException(e.getMessage());
         }
     }

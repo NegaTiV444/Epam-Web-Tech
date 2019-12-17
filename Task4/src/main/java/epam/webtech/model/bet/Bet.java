@@ -16,6 +16,6 @@ public class Bet extends Entity implements Comparable<Bet> {
 
     @Override
     public int compareTo(Bet o) {
-        return (int) (amount - o.getAmount());
+        return amount - o.getAmount();
     }
 }

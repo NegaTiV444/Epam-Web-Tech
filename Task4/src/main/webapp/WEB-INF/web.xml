@@ -80,6 +80,15 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>language</servlet-name>
+        <servlet-class>epam.webtech.web.LanguageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>language</servlet-name>
+        <url-pattern>/lng</url-pattern>
+    </servlet-mapping>
+
     <filter>
         <filter-name>defaultFilter</filter-name>
         <filter-class>epam.webtech.web.filters.DefaultFilter</filter-class>
@@ -88,6 +97,11 @@
         <filter-name>defaultFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/pages/notFoundErrorPage.jsp</location>
+    </error-page>
 
     <error-page>
         <exception-type>epam.webtech.exceptions.InternalException</exception-type>

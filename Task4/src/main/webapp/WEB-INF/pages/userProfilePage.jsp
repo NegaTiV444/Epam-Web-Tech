@@ -5,25 +5,30 @@
 <jsp:useBean id="user" type="epam.webtech.model.user.User" scope="request"/>
 <jsp:useBean id="bets" type="java.util.ArrayList<epam.webtech.model.bet.Bet>" scope="request"/>
 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:setLocale value="${cookie['lng'].value}" />
+<fmt:setBundle basename="messages" />
+
 <!DOCTYPE html>
-<html>
+<html lang="${cookie['lng'].value}">
 <head>
-    <title>Profile</title>
+    <title><fmt:message key="profile.title"/></title>
     <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/styles/style.css">
 </head>
 <body>
 <jsp:include page="header.jsp"/>
 <main>
-    <h2>Profile</h2>
-    <div>Name: ${user.name}</div>
-    <div>Total money: ${user.bank}</div>
+    <h2><fmt:message key="profile.title"/></h2>
+    <div><fmt:message key="profile.name"/>: ${user.name}</div>
+    <div><fmt:message key="profile.money"/>: ${user.bank}</div>
     <div>
         <c:choose>
             <c:when test="${bets.size() eq 0}">
-                <h1>You have no bets</h1>
+                <h1><fmt:message key="profile.noBets"/></h1>
             </c:when>
             <c:otherwise>
-                <h1>Your bets:</h1>
+                <h1><fmt:message key="profile.bets"/>:</h1>
                 <c:forEach var="bet" items="${bets}">
                     <tags:bet bet="${bet}"/>
                 </c:forEach>

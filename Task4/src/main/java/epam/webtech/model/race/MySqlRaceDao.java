@@ -7,7 +7,6 @@ import epam.webtech.model.enums.RaceStatus;
 import epam.webtech.model.horse.Horse;
 import epam.webtech.model.horse.HorseDao;
 import epam.webtech.model.horse.MySqlHorseDao;
-import epam.webtech.model.user.MySqlUserDao;
 import epam.webtech.utils.JdbcService;
 
 import java.sql.*;
@@ -29,6 +28,8 @@ public class MySqlRaceDao implements RaceDao {
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
             + " SET race_status = ?, race_winner = ? WHERE race_id = ?";
 
+ //   private final Logger logger = LogManager.getLogger();
+
     private JdbcService jdbcService = JdbcService.getInstance();
     private HorseDao horseDao = MySqlHorseDao.getInstance();
 
@@ -42,6 +43,7 @@ public class MySqlRaceDao implements RaceDao {
                 races.add(findById(resultSet.getInt("racehorse_race_id")));
             }
         } catch (SQLException e) {
+    //        logger.error(e);
             throw new DatabaseException("Database error.");
         }
         return races;
@@ -71,13 +73,14 @@ public class MySqlRaceDao implements RaceDao {
                 }
                 try (PreparedStatement preparedStatement1 = jdbcService.getConnection()
                         .prepareStatement(ADD_HORSES_QUERY)) {
-                    for (Horse horse: race.getHorses()) {
+                    for (Horse horse : race.getHorses()) {
                         preparedStatement1.setInt(1, race.getId());
                         preparedStatement1.setInt(2, horse.getId());
                         preparedStatement1.executeUpdate();
                     }
                 }
             } catch (SQLException ex) {
+     //           logger.error(ex);
                 throw new DatabaseException("Database error.");
             }
         }
@@ -97,6 +100,7 @@ public class MySqlRaceDao implements RaceDao {
                 }
             }
         } catch (SQLException e) {
+      //      logger.error(e);
             throw new DatabaseException("Database error");
         }
         return race;
@@ -114,8 +118,10 @@ public class MySqlRaceDao implements RaceDao {
                 }
             }
         } catch (SQLException | NotFoundException e) {
+       //     logger.error(e);
             throw new DatabaseException("Database error");
         } catch (DatabaseException e) {
+       //     logger.error(e);
             throw e;
         }
         return races;
@@ -136,6 +142,7 @@ public class MySqlRaceDao implements RaceDao {
             preparedStatement.setInt(3, race.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+      //      logger.error(e);
             throw new DatabaseException("Database error");
         }
     }
@@ -147,6 +154,7 @@ public class MySqlRaceDao implements RaceDao {
             preparedStatement.setInt(1, race.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+        //    logger.error(e);
             throw new DatabaseException("Database error");
         }
     }
@@ -165,6 +173,7 @@ public class MySqlRaceDao implements RaceDao {
         try {
             race.setStatus(RaceStatus.getByPriority(resultSet.getInt("race_status")));
         } catch (NotFoundException e) {
+        //    logger.error(e);
             throw new DatabaseException("RaceStatus with priority " + resultSet.getInt("race_id") + " not found");
         }
         race.setDate(new Date(resultSet.getLong("race_date")));

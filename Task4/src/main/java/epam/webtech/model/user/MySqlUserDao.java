@@ -24,6 +24,8 @@ public class MySqlUserDao implements UserDao {
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
             + " SET user_name = ?, user_password_hash = ?, user_bank = ?, user_authority_lvl = ? WHERE user_id = ?";
 
+  //  private final Logger logger = LogManager.getLogger();
+
     private JdbcService jdbcService = JdbcService.getInstance();
 
     private static class SingletonHandler {
@@ -58,6 +60,7 @@ public class MySqlUserDao implements UserDao {
                     }
                 }
             } catch (SQLException ex) {
+      //          logger.error(ex);
                 throw new DatabaseException("Database error");
             }
         }
@@ -76,6 +79,7 @@ public class MySqlUserDao implements UserDao {
                 }
             }
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         }
         return user;
@@ -94,6 +98,7 @@ public class MySqlUserDao implements UserDao {
                 }
             }
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         }
         return user;
@@ -109,8 +114,10 @@ public class MySqlUserDao implements UserDao {
                 }
             }
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         } catch (DatabaseException e) {
+     //       logger.error(e);
             throw e;
         }
         return users;
@@ -127,6 +134,7 @@ public class MySqlUserDao implements UserDao {
             preparedStatement.setInt(5, user.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+      //      logger.error(e);
             throw new DatabaseException("Database error");
         }
     }
@@ -138,6 +146,7 @@ public class MySqlUserDao implements UserDao {
             preparedStatement.setInt(1, user.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+     //       logger.error(e);
             throw new DatabaseException("Database error");
         }
     }

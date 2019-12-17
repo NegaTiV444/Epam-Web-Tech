@@ -19,6 +19,8 @@ import java.io.IOException;
 
 public class UserProfilePageServlet extends HttpServlet {
 
+    //private final Logger logger = LogManager.getLogger();
+
     private UserService userService = UserService.getInstance();
     private UserDao userDao = MySqlUserDao.getInstance();
     private BetDao betDao = MySqlBetDao.getInstance();
@@ -34,6 +36,7 @@ public class UserProfilePageServlet extends HttpServlet {
                 req.setAttribute("bets", betDao.findByUser(user));
                 req.getRequestDispatcher("/WEB-INF/pages/userProfilePage.jsp").forward(req, resp);
             } catch (DatabaseException | NotFoundException e) {
+             //   logger.error(e);
                 throw new InternalException(e.getMessage());
             }
         } else {

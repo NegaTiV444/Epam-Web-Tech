@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 public class BetService {
 
+    //private final Logger logger = LogManager.getLogger();
+
     private BetDao betDao = MySqlBetDao.getInstance();
     private UserDao userDao = MySqlUserDao.getInstance();
     private RaceDao raceDao = MySqlRaceDao.getInstance();
@@ -50,8 +52,8 @@ public class BetService {
                         .filter(bet -> bet.getHorse().equals(race.getWinnerHorse()))
                         .collect(Collectors.toList());
                 if (winningBets.size() > 0) {
-                    int multiplier = allBets.size()/winningBets.size();
-                    for (Bet bet: winningBets) {
+                    int multiplier = allBets.size() / winningBets.size();
+                    for (Bet bet : winningBets) {
                         bet.getUser().setBank(bet.getUser().getBank() + Math.round(bet.getAmount() * multiplier * 0.7f));
                         userDao.update(bet.getUser());
 
@@ -61,6 +63,7 @@ public class BetService {
                     betDao.delete(bet);
                 }
             } catch (DatabaseException | NotFoundException e) {
+        //        logger.error(e);
                 throw new InternalException("Internal error: " + e.getMessage());
             }
         }

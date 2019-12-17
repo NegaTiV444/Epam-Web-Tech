@@ -11,6 +11,8 @@ import java.util.Properties;
 
 public class HashService {
 
+ //   private final Logger logger = LogManager.getLogger();
+
     private static boolean isInitialized = false;
     private MessageDigest messageDigest = null;
 
@@ -21,8 +23,10 @@ public class HashService {
             messageDigest = MessageDigest.getInstance(prop.getProperty("hash.algorithm"));
             isInitialized = true;
         } catch (NoSuchAlgorithmException e) {
+    //        logger.error(e);
             throw new HashServiceException("Failed to initialize HashService. Algorithm not recognized.");
         } catch (IOException e) {
+    //        logger.error(e);
             throw new HashServiceException("Failed to initialize HashService. Configuration file is unavailable.");
         }
     }

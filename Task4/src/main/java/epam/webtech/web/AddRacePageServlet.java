@@ -25,6 +25,8 @@ import java.util.Map;
 
 public class AddRacePageServlet extends HttpServlet {
 
+    //private final Logger logger = LogManager.getLogger();
+
     private HorseDao horseDao = MySqlHorseDao.getInstance();
     private RaceDao raceDao = MySqlRaceDao.getInstance();
 
@@ -38,6 +40,7 @@ public class AddRacePageServlet extends HttpServlet {
                 req.setAttribute("horses", horseDao.findAll());
                 req.getRequestDispatcher("/WEB-INF/pages/addRacePage.jsp").forward(req, resp);
             } catch (DatabaseException | NotFoundException e) {
+               // logger.error(e);
                 throw new InternalException(e.getMessage());
             }
         }
@@ -65,6 +68,7 @@ public class AddRacePageServlet extends HttpServlet {
             raceDao.add(race);
             resp.sendRedirect("../races");
         } catch (DatabaseException | NotFoundException | ParseException | AlreadyExistsException e) {
+            //logger.error(e);
             throw new InternalException(e.getMessage());
         }
 

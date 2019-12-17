@@ -29,6 +29,6 @@ public enum RaceStatus {
             default:
                 throw new NotFoundException("RaceStatus with priority " + priority + " not found");
         }
-
     }
+
 }
