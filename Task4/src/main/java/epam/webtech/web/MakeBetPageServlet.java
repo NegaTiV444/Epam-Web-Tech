@@ -76,8 +76,7 @@ public class MakeBetPageServlet extends HttpServlet {
         } catch (DatabaseException | NullPointerException | AlreadyExistsException e) {
             throw new InternalException("Internal error");
         } catch (NotEnoughMoneyException e) {
-            req.setAttribute("errorMessage", e.getMessage());
-            req.getRequestDispatcher("/WEB-INF/pages/notFoundErrorPage.jsp").forward(req, resp);
+            resp.sendRedirect("makebet?errorMessage=Not enough money&raceid=" + raceId);
         }
 
     }

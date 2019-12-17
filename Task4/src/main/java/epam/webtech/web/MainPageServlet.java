@@ -11,22 +11,20 @@ import epam.webtech.model.horse.MySqlHorseDao;
 import epam.webtech.model.race.MySqlRaceDao;
 import epam.webtech.model.race.Race;
 import epam.webtech.model.race.RaceDao;
+import epam.webtech.utils.BetService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class MainPageServlet extends HttpServlet {
 
-    private HorseDao horseDao = MySqlHorseDao.getInstance();
     private RaceDao raceDao = MySqlRaceDao.getInstance();
+    private HorseDao horseDao = MySqlHorseDao.getInstance();
+    private BetService betService = BetService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,32 +32,28 @@ public class MainPageServlet extends HttpServlet {
             List<Race> races = raceDao.findAll();
             req.setAttribute("races", races);
         } catch (DatabaseException | NotFoundException e) {
-            e.printStackTrace();
+            throw new InternalException("Internal error: " + e.getMessage());
         }
         req.getRequestDispatcher("/WEB-INF/pages/racesPage.jsp").forward(req, resp);
     }
 
+    /*
+        Finish race
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int horseId;
+        int raceId;
         try {
-            Race race = new Race();
-            List<Horse> horses = horseDao.findAll();
-            Map<String, String[]> paramMap = req.getParameterMap();
-            for (Horse horse: horses) {
-                if (paramMap.containsKey(horse.getName())) {
-                    race.getHorses().add(horse);
-                }
-            }
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String dateStr = req.getParameter("race_date");
-            Date raceDate = format.parse(dateStr);
-            race.setDate(raceDate);
-            race.setStatus(RaceStatus.WAITING);
-            raceDao.add(race);
-            resp.sendRedirect("races");
-        } catch (DatabaseException | NotFoundException | ParseException | AlreadyExistsException e) {
-            throw new InternalException(e.getMessage());
+            horseId = Integer.parseInt(req.getParameter("winnerHorse"));
+            raceId = Integer.parseInt(req.getParameter("raceid"));
+            Horse horse = horseDao.findById(horseId);
+            Race race = raceDao.findById(raceId);
+            race.setWinnerHorse(horse);
+            betService.finishRace(race);
+            resp.sendRedirect("../races");
+        } catch (NumberFormatException | DatabaseException | NotFoundException e) {
+            throw new InternalException("Internal error " + e.getMessage());
         }
-
     }
 }

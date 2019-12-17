@@ -25,12 +25,10 @@
                     <option value="${horse.id}">${horse.name}</option>
                 </c:forEach>
             </select>
-            <span>Amount of money:</span>
-            <c:if test="${not empty param.errorMsg}">
-                <c:if test="${param.errorMsg == 'notenoughmoney.error'}">
-                    <p style="color:red">Not enough money</p>
-                </c:if>
+            <c:if test="${not empty param.errorMessage}">
+                <p style="color:red">${param.errorMessage}</p>
             </c:if>
+            <span>Amount of money:</span>
             <input type="number" name="amount">
             <input type="submit" value="Make bet">
         </form>

@@ -26,7 +26,7 @@ public class MySqlHorseDao implements HorseDao {
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE horse_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
-            + "SET horse_name = ?, horse_wins_counter = ? WHERE horse_id = ?";
+            + " SET horse_name = ?, horse_wins_counter = ? WHERE horse_id = ?";
 
     private JdbcService jdbcService = epam.webtech.utils.JdbcService.getInstance();
 

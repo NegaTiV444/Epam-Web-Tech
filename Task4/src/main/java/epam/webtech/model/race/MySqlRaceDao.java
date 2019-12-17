@@ -27,7 +27,7 @@ public class MySqlRaceDao implements RaceDao {
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE race_id = ?;";
     private static final String UPDATE_QUERY = "UPDATE " + TABLE
-            + "SET race_status = ?, race_winner = ? WHERE race_id = ?";
+            + " SET race_status = ?, race_winner = ? WHERE race_id = ?";
 
     private JdbcService jdbcService = JdbcService.getInstance();
     private HorseDao horseDao = MySqlHorseDao.getInstance();
@@ -126,7 +126,14 @@ public class MySqlRaceDao implements RaceDao {
         findById(race.getId());
         try (PreparedStatement preparedStatement = jdbcService.getConnection().prepareStatement(UPDATE_QUERY)) {
             preparedStatement.setInt(1, race.getStatus().getPriority());
-            preparedStatement.setString(2, race.getWinnerHorse().getName());
+            if (race.getWinnerHorse() == null) {
+                preparedStatement.setString(2, "");
+
+            } else {
+                preparedStatement.setString(2, race.getWinnerHorse().getName());
+
+            }
+            preparedStatement.setInt(3, race.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException("Database error");

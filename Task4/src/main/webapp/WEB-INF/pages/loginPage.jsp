@@ -10,7 +10,6 @@
 <body>
 <jsp:include page="header.jsp"/>
 <main>
-    <h2>Login</h2>
     <form id="loginForm" method="POST" action="<c:url value="/profile"/>">
         <section class="loginSection">
             <c:if test="${not empty param.errorMsg}">

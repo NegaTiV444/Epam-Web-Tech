@@ -28,7 +28,7 @@ public class MySqlBetDao implements BetDao{
     private static final String FIND_BY_RACE_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE bet_race_id = ? ;";
     private static final String FIND_BY_USER_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE bet_user_id = ? ;";
     private static final String FIND_BY_HORSE_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE bet_horse_id = ? ;";
-    private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE race_id = ?;";
+    private static final String DELETE_QUERY = "DELETE FROM " + TABLE + " WHERE bet_id = ?;";
     private static final String FIND_ALL_QUERY = "SELECT * FROM " + TABLE + ";";
     private static final String ADD_QUERY = "INSERT INTO " + TABLE
             + " (bet_amount, bet_race_id, bet_horse_id, bet_user_id) VALUES (?, ?, ?, ?)";

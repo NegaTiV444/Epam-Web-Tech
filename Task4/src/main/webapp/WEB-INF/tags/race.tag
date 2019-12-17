@@ -26,13 +26,8 @@
             <c:choose>
                 <c:when test="${authorityLvl eq 2}">
                     <div>
-                        <form action="<c:url value="/races/finish?raceid=${race.id}"/>" method="post">
-                            <select id="winnerHorse" name="winnerHorse">
-                                <c:forEach var="horse" items="${race.horses}">
-                                    <option>${horse.name}</option>
-                                </c:forEach>
-                                <input type="submit" value="Finish race">
-                            </select>
+                        <form action="<c:url value="/races/start?raceid=${race.id}"/>" method="post">
+                            <input type="submit" value="Start race">
                         </form>
                     </div>
                 </c:when>
@@ -46,7 +41,23 @@
             </c:choose>
         </c:when>
         <c:otherwise>
-            <h3 class="race-action">Race already started</h3>
+            <c:choose>
+                <c:when test="${authorityLvl eq 2}">
+                    <div>
+                        <form action="<c:url value="/races/finish?raceid=${race.id}"/>" method="post">
+                            <select id="winnerHorse" name="winnerHorse">
+                                <c:forEach var="horse" items="${race.horses}">
+                                    <option value="${horse.id}">${horse.name}</option>
+                                </c:forEach>
+                            </select>
+                            <input type="submit" value="Finish race">
+                        </form>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <h3 class="race-action">Race already started</h3>
+                </c:otherwise>
+            </c:choose>
         </c:otherwise>
     </c:choose>
 </div>

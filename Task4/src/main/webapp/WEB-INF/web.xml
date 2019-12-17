@@ -45,8 +45,9 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>races</servlet-name>
-        <url-pattern>/races/*</url-pattern>
+        <url-pattern>/races/finish</url-pattern>
     </servlet-mapping>
+
 
     <servlet>
         <servlet-name>addRace</servlet-name>
@@ -55,6 +56,28 @@
     <servlet-mapping>
         <servlet-name>addRace</servlet-name>
         <url-pattern>/addrace</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>addRace</servlet-name>
+        <url-pattern>/races/add</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>startRace</servlet-name>
+        <servlet-class>epam.webtech.web.StartRaceServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>startRace</servlet-name>
+        <url-pattern>/races/start</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>logout</servlet-name>
+        <servlet-class>epam.webtech.web.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>logout</servlet-name>
+        <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
     <filter>
